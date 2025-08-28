@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Failed suite [Surefire suite]" verbose="0">
+  <test thread-count="5" name="Surefire test(failed)" verbose="0">
+    <classes>
+      <class name="com.qa.database.DatabaseTest">
+        <methods>
+          <include name="testUsersRegisteredInLastSevenDays"/>
+          <include name="testVerifyUIInsertReflectedInDB"/>
+          <include name="testDatabaseConnection"/>
+          <include name="testQueryPerformance"/>
+          <include name="testCustomersWithNoOrders"/>
+          <include name="testEdgeCases"/>
+          <include name="setupClass"/>
+          <include name="testCustomersWithMoreThanFiveOrders"/>
+          <include name="testFindDuplicateEmails"/>
+          <include name="testBankingTransferValidation"/>
+          <include name="teardownClass"/>
+          <include name="testDataIntegrityConstraints"/>
+          <include name="testSecondHighestSalary"/>
+        </methods>
+      </class> <!-- com.qa.database.DatabaseTest -->
+    </classes>
+  </test> <!-- Surefire test(failed) -->
+</suite> <!-- Failed suite [Surefire suite] -->

@@ -10,48 +10,62 @@ import java.util.Properties;
  */
 public class DatabaseConnection {
     
+    private static final String DB_SERVER_URL = "jdbc:mysql://localhost:3306/";
     private static final String DB_URL = "jdbc:mysql://localhost:3306/qa_test_db";
     private static final String DB_USER = "qa_user";
     private static final String DB_PASSWORD = "qa_password";
     
-    private static HikariDataSource dataSource;
-    
-    static {
-        try {
-            initializeDataSource();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize database connection pool", e);
-        }
-    }
+    private static volatile HikariDataSource dataSource;
     
     private static void initializeDataSource() {
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl(DB_URL);
-        config.setUsername(DB_USER);
-        config.setPassword(DB_PASSWORD);
-        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        
-        // Connection pool settings
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(2);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(600000);
-        config.setMaxLifetime(1800000);
-        
-        // Additional MySQL specific settings
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.addDataSourceProperty("useServerPrepStmts", "true");
-        
-        dataSource = new HikariDataSource(config);
+        if (dataSource == null) {
+            synchronized (DatabaseConnection.class) {
+                if (dataSource == null) {
+                    HikariConfig config = new HikariConfig();
+                    config.setJdbcUrl(DB_URL);
+                    config.setUsername(DB_USER);
+                    config.setPassword(DB_PASSWORD);
+                    config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+                    
+                    // Connection pool settings
+                    config.setMaximumPoolSize(10);
+                    config.setMinimumIdle(2);
+                    config.setConnectionTimeout(30000);
+                    config.setIdleTimeout(600000);
+                    config.setMaxLifetime(1800000);
+                    
+                    // Additional MySQL specific settings
+                    config.addDataSourceProperty("cachePrepStmts", "true");
+                    config.addDataSourceProperty("prepStmtCacheSize", "250");
+                    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+                    config.addDataSourceProperty("useServerPrepStmts", "true");
+                    
+                    dataSource = new HikariDataSource(config);
+                }
+            }
+        }
     }
     
     /**
      * Get a connection from the connection pool
      */
     public static Connection getConnection() throws SQLException {
+        if (dataSource == null) {
+            initializeDataSource();
+        }
         return dataSource.getConnection();
+    }
+
+    public static void createDatabase() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            try (Connection conn = DriverManager.getConnection(DB_SERVER_URL, DB_USER, DB_PASSWORD);
+                Statement stmt = conn.createStatement()) {
+                stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS qa_test_db");
+            }
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException("Failed to create database", e);
+        }
     }
     
     /**

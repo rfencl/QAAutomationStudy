@@ -9,10 +9,14 @@ public class DatabaseTest {
     
     @BeforeClass
     public void setupClass() {
+       QueryExecutor.createDatabaseIfNotExists();
+       
         // Verify database connection before running tests
         Assert.assertTrue(DatabaseConnection.testConnection(), 
                          "Database connection should be available");
-        
+       
+        QueryExecutor.createTables();
+                         
         // Setup test data
         QueryExecutor.setupTestData();
     }
@@ -115,7 +119,7 @@ public class DatabaseTest {
         
         // Insert user (simulating UI action)
         int rowsAffected = QueryExecutor.executeUpdate(
-            "INSERT INTO Users (username, email, password_hash, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO users (username, email, password_hash, first_name, last_name) VALUES (?, ?, ?, ?, ?)",
             testUsername, testEmail, "hashed_password", "UI", "Test"
         );
         
@@ -126,7 +130,7 @@ public class DatabaseTest {
         Assert.assertTrue(userExists, "User should exist in database after UI insert");
         
         // Cleanup
-        QueryExecutor.executeUpdate("DELETE FROM Users WHERE username = ?", testUsername);
+        QueryExecutor.executeUpdate("DELETE FROM users WHERE username = ?", testUsername);
     }
     
     @Test(priority = 8, groups = {"banking"})
@@ -139,15 +143,15 @@ public class DatabaseTest {
         
         // Simulate a transfer (in real scenario, this would be done through UI)
         // 1. Insert transaction record
-        int transactionId = QueryExecutor.executeUpdate(
-            "INSERT INTO Transactions (from_account_id, to_account_id, amount, transaction_type, status) VALUES (?, ?, ?, ?, ?)",
+        QueryExecutor.executeUpdate(
+            "INSERT INTO transactions (from_account_id, to_account_id, amount, transaction_type, status) VALUES (?, ?, ?, ?, ?)",
             1, 2, transferAmount, "transfer", "completed"
         );
         
         // 2. Update account balances
-        QueryExecutor.executeUpdate("UPDATE Accounts SET balance = balance - ? WHERE account_id = ?", 
+        QueryExecutor.executeUpdate("UPDATE accounts SET balance = balance - ? WHERE account_id = ?", 
                                    transferAmount, 1);
-        QueryExecutor.executeUpdate("UPDATE Accounts SET balance = balance + ? WHERE account_id = ?", 
+        QueryExecutor.executeUpdate("UPDATE accounts SET balance = balance + ? WHERE account_id = ?", 
                                    transferAmount, 2);
         
         // Verify transfer
@@ -173,7 +177,7 @@ public class DatabaseTest {
         // Execute a potentially slow query
         List<Map<String, Object>> results = QueryExecutor.executeQuery(
             "SELECT c.name, COUNT(o.order_id) as order_count " +
-            "FROM Customers c LEFT JOIN Orders o ON c.customer_id = o.customer_id " +
+            "FROM customers c LEFT JOIN orders o ON c.customer_id = o.customer_id " +
             "GROUP BY c.customer_id, c.name ORDER BY order_count DESC"
         );
         
@@ -191,15 +195,18 @@ public class DatabaseTest {
         // Test unique constraint violation
         try {
             QueryExecutor.executeUpdate(
-                "INSERT INTO Users (username, email, password_hash) VALUES (?, ?, ?)",
+                "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
                 "qa_user", "qa@example.com", "test_hash"
             );
             Assert.fail("Should not allow duplicate username");
         } catch (RuntimeException e) {
             // Expected - unique constraint violation
-            Assert.assertTrue(e.getMessage().contains("Duplicate entry") || 
-                            e.getMessage().contains("duplicate key"),
-                            "Should get duplicate key error");
+            Throwable cause = e.getCause();
+            Assert.assertNotNull(cause, "Exception should have a cause");
+            String causeMessage = cause.getMessage();
+            Assert.assertTrue(causeMessage.contains("Duplicate entry") || 
+                            causeMessage.contains("duplicate key"),
+                            "Should get duplicate key error. Got: " + causeMessage);
         }
     }
     
@@ -207,14 +214,14 @@ public class DatabaseTest {
     public void testEdgeCases() {
         // Test null handling
         List<Map<String, Object>> usersWithNullLogin = QueryExecutor.executeQuery(
-            "SELECT username, email, last_login FROM Users WHERE last_login IS NULL"
+            "SELECT username, email, last_login FROM users WHERE last_login IS NULL"
         );
         
         Assert.assertNotNull(usersWithNullLogin, "Query should handle null values");
         
         // Test empty result set
         List<Map<String, Object>> nonExistentData = QueryExecutor.executeQuery(
-            "SELECT * FROM Users WHERE username = 'definitely_does_not_exist'"
+            "SELECT * FROM users WHERE username = 'definitely_does_not_exist'"
         );
         
         Assert.assertNotNull(nonExistentData, "Query should return empty list for no results");

@@ -11,6 +11,31 @@ public class DatabaseHelper {
     private static final String DB_USER = "qa_user";
     private static final String DB_PASSWORD = "qa_password";
     
+    public static void createDatabaseIfNotExists() {
+        String serverUrl = "jdbc:mysql://localhost:3306/";
+        try (Connection conn = DriverManager.getConnection(serverUrl, DB_USER, DB_PASSWORD);
+             Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS qa_test_db");
+            System.out.println("Database 'qa_test_db' created or already exists.");
+        } catch (SQLException e) {
+            System.out.println("Error creating database: " + e.getMessage());
+        }
+    }
+
+    public static void createUsersTableIfNotExists() {
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            String sql = "CREATE TABLE IF NOT EXISTS users (" +
+                         "id INT AUTO_INCREMENT PRIMARY KEY," +
+                         "username VARCHAR(50) NOT NULL," +
+                         "password VARCHAR(50) NOT NULL)";
+            stmt.executeUpdate(sql);
+            System.out.println("Table 'users' created or already exists.");
+        } catch (SQLException e) {
+            System.out.println("Error creating table: " + e.getMessage());
+        }
+    }
+
     public static Connection getConnection() throws SQLException {
         try {
             Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -60,6 +85,8 @@ public class DatabaseHelper {
     }
     
     public static void main(String[] args) {
+        createDatabaseIfNotExists();
+        createUsersTableIfNotExists();
         demonstrateExceptionHandling();
         
         // Create a sample test data file first
