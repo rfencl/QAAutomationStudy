@@ -1,0 +1,4 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "livePreview.defaultPreviewPath": "/target/surefire-reports/index.html"
+}

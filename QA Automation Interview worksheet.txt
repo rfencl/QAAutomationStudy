@@ -1,0 +1,93 @@
+QA Automation Interview Study Guide
+Java Questions
+ 
+1. Explain the difference between List, Set, and Map. When would you use each in test automation? 
+ 
+List - An ordered collection of elements that allows duplicate values. You would use a list in automation to store a sequence of elements in the order that they appear, for example, to get all the links on a page and verify their text in order.
+
+List<String> browser = List.of("Chrome", "Firefox", "Edge");
+
+Set - A collection of unique elements, no duplicates, You would use a set to store elements where the order doesn't matter and you only want to know about the elements, for example to get all of the unique error messages on a page.
+
+Set<String> uniqueIds = new HashSet<>(List.of("ID1", "ID2");
+
+Map - A collection of key-value pairs, where each key is unique. You can use a map to store test data, for example usenames and passwords for different user roles. 
+
+Map<String, String> testData = new HashMap<>();
+testData.put("username", "qa_user");
+testData.put("password", "pass123");
+
+2. How do you handle exceptions in Java? Give an example where this would be important in test automation. 
+Exceptions are handled with try-catch blocks. It is important to catch exceptions and handle them to prevent the test run from crashing.
+
+database connection example 
+try {
+   Connection conn = DriverManager.getConnection(url, user, pass);
+} catch (SQLException e) {
+   System.out.println("Database connection failed: " + e.getMessage());
+   Assert.fail("Test failed due to DB error");
+}
+
+Look for element on page example;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.NoSuchElementException;
+
+try {
+  WebElement errorMessage = driver.findElement(By.id("error-message"));
+  System.out.println("Error message found: " + errorMessage.getText());
+} catch (NoSuchElementException e) {
+  System.out.println("No error message found, which is expected.");
+}
+
+3. What is the difference between `==` and `.equals()` in Java? How does it impact Selenium tests?
+
+==: This operator compares the memory address of two objects. Do two references point to the exact same object.
+.equals(): This method, when implemented correctly compares the values of two objects.
+This is critical in selenium because you would want to test the value of a web element against an expected string.
+String a = new String("test");
+String b = new String("test");
+System.out.println(a == b)        // false
+System.out.println(a.equals(b));  //true
+
+
+
+Read test data from a file using BufferedReader or Files.lines
+For structured data, you can use external libraries
+  Apache POI: For reading and writing MS Excel files
+  OpenCSV
+  
+try (BufferedReader br = new BufferedReader(new FileReader("data.txt"))) {
+	String line;
+	while ((line = br.readLine()) != null) {
+		System.out.println(line);
+	}
+}
+
+Page Object Model (POM) Login Page Example.
+Java 8 streams and lambdas for filtering test data.
+Reusable code: helper methods for actions like clickElement.
+Selenium Questions
+findElement vs findElements.
+When to use XPath vs CSS Selector.
+Waits: implicit, explicit, fluent. Example code with WebDriverWait.
+Handling alerts with driver.switchTo().alert().
+Dropdown interaction with Select class.
+Handling multiple windows/tabs.
+Parallel test execution with TestNG suite configuration.
+Handling dynamic elements with partial attribute matching.
+SQL Questions
+Query: Users registered in last 7 days.
+Query: Find duplicate records in a table.
+Query: Find second highest salary.
+Query: Customers with more than 5 orders.
+Query: Verify UI insert reflected in DB.
+Difference between INNER JOIN, LEFT JOIN, RIGHT JOIN.
+Query: Users with no orders.
+QA Design Questions
+Login page test cases: positive, negative, edge cases.Banking money transfer DB validation checks.
+Automation vs manual test decision.
+Smoke vs regression vs sanity tests.
+Test data setup and cleanup strategies.
+Search box auto-suggest test cases.

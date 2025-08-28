@@ -1,0 +1,104 @@
+@startuml OOPConcepts Class Diagram
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 10
+skinparam packageStyle rectangle
+
+package "com.qa.advanced" {
+
+    interface TestExecutor {
+        +executeTest() : void
+        +getTestName() : String
+        +isTestPassed() : boolean
+    }
+
+    abstract class BaseTest {
+        #testName : String
+        #testPassed : boolean
+        #testSteps : List<String>
+        -executionTime : Date
+        
+        +BaseTest(testName : String)
+        +getTestName() : String
+        +isTestPassed() : boolean
+        +getExecutionTime() : Date
+        #addTestStep(step : String) : void
+        #setTestResult(passed : boolean) : void
+        +{abstract} executeTest() : void
+        +printTestResults() : void
+    }
+
+    class LoginTest {
+        -username : String
+        -password : String
+        
+        +LoginTest(testName : String, username : String, password : String)
+        +executeTest() : void
+        -validateLogin(user : String, pass : String) : boolean
+    }
+
+    class DatabaseTest {
+        -query : String
+        -expectedResult : Object
+        
+        +DatabaseTest(testName : String, query : String, expectedResult : Object)
+        +executeTest() : void
+        -executeQuery(query : String) : Object
+    }
+
+    class TestUtils {
+        +{static} filterPassedTests(tests : List<BaseTest>) : List<BaseTest>
+        +{static} filterTestsByName(tests : List<BaseTest>, namePattern : String) : List<BaseTest>
+        +{static} filterTests(tests : List<BaseTest>, condition : Predicate<BaseTest>) : List<BaseTest>
+        +{static} executeAllTests(tests : List<TestExecutor>) : void
+    }
+
+    class TestSuite {
+        -suiteName : String
+        -tests : List<BaseTest>
+        -configuration : Map<String, Object>
+        
+        +TestSuite(suiteName : String)
+        +addTest(test : BaseTest) : void
+        +executeAllTests() : void
+        -printSummary() : void
+        +setConfiguration(key : String, value : Object) : void
+        +getConfiguration(key : String) : Object
+    }
+
+    class OOPConcepts {
+        +{static} main(args : String[]) : void
+        +{static} demonstrateOOPConcepts() : void
+    }
+}
+
+' Relationships
+TestExecutor <|.. BaseTest : implements
+BaseTest <|-- LoginTest : extends
+BaseTest <|-- DatabaseTest : extends
+
+TestSuite o-- BaseTest : contains
+TestUtils ..> BaseTest : uses
+TestUtils ..> TestExecutor : uses
+OOPConcepts ..> TestSuite : uses
+OOPConcepts ..> LoginTest : creates
+OOPConcepts ..> DatabaseTest : creates
+OOPConcepts ..> TestUtils : uses
+
+' Notes
+note right of TestExecutor : Interface defining\ntest execution contract
+
+note bottom of BaseTest : Abstract class providing\ncommon test functionality\nand enforcing executeTest()\nimplementation
+
+note right of LoginTest : Concrete implementation\nfor login testing scenarios
+
+note right of DatabaseTest : Concrete implementation\nfor database testing scenarios
+
+note top of TestUtils : Utility class with static methods\nfor test filtering and execution\nDemonstrates functional programming
+
+note left of TestSuite : Composition pattern\nManages collection of tests\nwith configuration support
+
+note bottom of OOPConcepts : Main class demonstrating\nall OOP concepts:\n- Inheritance\n- Polymorphism\n- Encapsulation\n- Abstraction
+
+@enduml

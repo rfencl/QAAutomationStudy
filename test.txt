@@ -1,0 +1,155 @@
+1. Java for QA Automation
+
+Focus on writing clean, test-oriented code.
+Core topics:
+
+Object-oriented programming (classes, objects, inheritance, interfaces, polymorphism, encapsulation).
+
+Data types, collections (List, Set, Map), and when to use each.
+
+Exception handling (try-catch, throw/throws, custom exceptions).
+
+Input/output (working with files, streams).
+
+Java 8+ features (lambdas, streams, optional).
+
+Writing reusable utilities and helper functions.
+
+Understanding Maven or Gradle for dependency management.
+
+Exercises:
+
+Write a utility to read test data from a CSV or JSON file.
+
+Implement a Page Object Model for a sample website.
+
+Practice coding exercises on sites like LeetCode or HackerRank focusing on arrays, strings, and collections.
+
+2. Selenium WebDriver
+
+This will be central to web UI test automation.
+Core topics:
+
+WebDriver basics: launching browsers, locating elements (id, name, cssSelector, xpath).
+
+Selenium waits: implicit, explicit, fluent waits.
+
+Page Object Model (POM) and Page Factory.
+
+Handling web elements: dropdowns, alerts, frames, windows, dynamic elements.
+
+TestNG or JUnit integration: test suites, annotations, assertions.
+
+Running tests in parallel and parameterizing tests.
+
+Handling test data (data providers, external files).
+
+Reporting (ExtentReports, Allure).
+
+Cross-browser testing and Selenium Grid.
+
+Exercises:
+
+Automate a login form with valid and invalid data.
+
+Write a script to scrape table data from a web page and validate it against expected results.
+
+Create a reusable BaseTest class to manage setup and teardown.
+
+3. SQL for QA
+
+Database validation is a big part of QA automation.
+Core topics:
+
+CRUD operations: SELECT, INSERT, UPDATE, DELETE.
+
+Joins: INNER, LEFT, RIGHT, FULL.
+
+Filtering with WHERE, LIKE, IN, BETWEEN.
+
+Aggregations: COUNT, SUM, AVG, GROUP BY, HAVING.
+
+Subqueries and nested queries.
+
+Common functions (string functions, date functions).
+
+Writing queries to validate application data against DB records.
+
+Exercises:
+
+Write a query to find all users who registered in the past 30 days.
+
+Validate that an order placed on the UI is reflected in the Orders table.
+
+Practice combining multiple joins to test relational integrity.
+
+4. Test Case Design
+
+You’ll likely need to show how you think about test coverage.
+Core topics:
+
+Functional test design: positive, negative, boundary, edge cases.
+
+Database test design: verifying CRUD operations, triggers, constraints.
+
+Web client test design: form validation, error messages, UI consistency, navigation.
+
+API testing basics (REST methods, JSON/XML responses).
+
+Data-driven testing.
+
+Exercises:
+
+Write test cases for a login page (web client).
+
+Write SQL test cases for a new record being added to a table.
+
+Create an end-to-end scenario: user registers → confirm DB insert → login with new account.
+
+5. Integration of Java + Selenium + SQL
+
+You’ll often need to combine these skills.
+Core topics:
+
+Using JDBC in Java to connect to a database.
+
+Querying the DB in test scripts to validate UI actions.
+
+Designing automation tests that check both UI and DB layers.
+
+CI/CD basics: running tests in Jenkins, GitHub Actions, or GitLab pipelines.
+
+Exercises:
+
+Automate placing an order in a demo web app, then validate order details in the DB.
+
+Create a test suite that runs UI tests and DB validation together.
+
+Write a data-driven test that pulls input from a database.
+
+6. General QA Concepts
+
+Don’t overlook theory questions.
+Core topics:
+
+Software testing lifecycle, defect life cycle.
+
+Different types of testing (functional, regression, smoke, sanity, integration).
+
+Agile methodology and QA’s role in Scrum.
+
+Test strategy vs. test plan.
+
+Understanding risks, prioritization, and coverage.
+
+7. Mock Interview Practice
+
+Simulate interview conditions:
+
+Write and explain test cases verbally.
+
+Solve a SQL query on a whiteboard or in a shared doc.
+
+Debug a small Selenium script.
+
+Explain trade-offs in framework design (e.g., why Page Object Model, why TestNG).
