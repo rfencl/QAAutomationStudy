@@ -40,3 +40,7 @@ database-workspace/target/surefire-reports/Surefire suite/Surefire test.xml
 database-workspace/target/surefire-reports/Surefire suite/testng-failed.xml
 database-workspace/target/surefire-reports/TEST-com.qa.database.DatabaseTest.xml
 database-workspace/target/surefire-reports/testng-failed.xml
+database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
