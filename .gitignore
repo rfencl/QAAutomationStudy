@@ -2,5 +2,4 @@
 **/target/
 database-workspace/target/
 /database-workspace/.idea
-/database-workspace/target
-/database-workspace/target
+/database-workspace/target/
