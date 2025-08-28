@@ -1,0 +1,42 @@
+@startuml
+title Class Diagram for database-workspace
+
+class DatabaseConnection {
+  -DB_SERVER_URL: String
+  -DB_URL: String
+  -DB_USER: String
+  -DB_PASSWORD: String
+  -dataSource: HikariDataSource
+  +createDatabase()
+  +initializeDataSource()
+  +getConnection(): Connection
+  +closeDataSource()
+  +testConnection(): boolean
+  +verifyDatabaseAccess(): boolean
+  +printDatabaseInfo()
+}
+
+class QueryExecutor {
+  +executeQuery(query, params): List<Map<String, Object>>
+  +executeUpdate(query, params): int
+  +executeScalar(query, params): Object
+  +createTables()
+  +setupTestData()
+  +cleanupTestData()
+  ' ... and other specific query methods
+}
+
+class DatabaseTest {
+  +setupClass()
+  +teardownClass()
+  +testDatabaseConnection()
+  +testUsersRegisteredInLastSevenDays()
+  +testFindDuplicateEmails()
+  ' ... and other test methods
+}
+
+QueryExecutor --> DatabaseConnection : uses
+DatabaseTest --> QueryExecutor : uses
+DatabaseTest --> DatabaseConnection : uses
+
+@enduml
