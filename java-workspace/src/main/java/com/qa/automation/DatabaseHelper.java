@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class DatabaseHelper {
     
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/qa_test_db";
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/qa_test_db_demo";
     private static final String DB_USER = "qa_user";
     private static final String DB_PASSWORD = "qa_password";
     
@@ -15,10 +15,11 @@ public class DatabaseHelper {
         String serverUrl = "jdbc:mysql://localhost:3306/";
         try (Connection conn = DriverManager.getConnection(serverUrl, DB_USER, DB_PASSWORD);
              Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS qa_test_db");
-            System.out.println("Database 'qa_test_db' created or already exists.");
+            stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS qa_test_db_demo");
+            System.out.println("Database 'qa_test_db_demo' created or already exists.");
         } catch (SQLException e) {
             System.out.println("Error creating database: " + e.getMessage());
+            throw new RuntimeException("Error creating database", e);
         }
     }
 

@@ -1,0 +1,3 @@
+username,password,expected_result
+qa_user,pass123,success
+invalid_user,wrong_pass,failure
