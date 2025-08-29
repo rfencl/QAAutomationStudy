@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="11" failures="0" name="com.qa.database.DatabaseTest" time="1.836" errors="0" skipped="0">
+<testsuite tests="11" failures="0" name="com.qa.database.DatabaseTest" time="0.442" errors="0" skipped="0">
   <properties>
     <property name="jansi.mode" value="force"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
@@ -59,15 +59,15 @@
     <property name="sun.cpu.endian" value="little"/>
     <property name="java.vendor.version" value="Temurin-23.0.2+7"/>
   </properties>
-  <testcase classname="com.qa.database.DatabaseTest" name="testDatabaseConnection" time="0.224"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testUsersRegisteredInLastSevenDays" time="0.015"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testFindDuplicateEmails" time="0.011"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testSecondHighestSalary" time="0.041"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithMoreThanFiveOrders" time="0.01"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithNoOrders" time="0.022"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testVerifyUIInsertReflectedInDB" time="0.632"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testBankingTransferValidation" time="0.698"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testQueryPerformance" time="0.011"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testDataIntegrityConstraints" time="0.133"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testEdgeCases" time="0.039"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testDatabaseConnection" time="0.132"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testUsersRegisteredInLastSevenDays" time="0.032"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testFindDuplicateEmails" time="0.012"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testSecondHighestSalary" time="0.02"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithMoreThanFiveOrders" time="0.011"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithNoOrders" time="0.013"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testVerifyUIInsertReflectedInDB" time="0.035"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testBankingTransferValidation" time="0.076"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testQueryPerformance" time="0.01"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testDataIntegrityConstraints" time="0.07"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testEdgeCases" time="0.031"/>
 </testsuite>

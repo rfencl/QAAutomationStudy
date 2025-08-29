@@ -1,22 +1,23 @@
 package com.qa.database;
 
+import com.qa.configuration.DatabaseProperty;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.*;
-import java.util.Properties;
 
 /**
  * Database connection utility class for QA testing
  */
 public class DatabaseConnection {
-    
-    private static final String DB_SERVER_URL = "jdbc:mysql://localhost:3306/";
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/qa_test_db";
-    private static final String DB_USER = "qa_user";
-    private static final String DB_PASSWORD = "qa_password";
-    
+
+    private static final String DB_SERVER_URL = DatabaseProperty.getDbServerUrl();
+    private static final String DB_URL = DatabaseProperty.getDbUrl();
+    private static final String DB_USER = DatabaseProperty.getDbUser();
+    private static final String DB_PASSWORD = DatabaseProperty.getDbPassword();
+
     private static volatile HikariDataSource dataSource;
-    
+
     private static void initializeDataSource() {
         if (dataSource == null) {
             synchronized (DatabaseConnection.class) {
@@ -26,26 +27,26 @@ public class DatabaseConnection {
                     config.setUsername(DB_USER);
                     config.setPassword(DB_PASSWORD);
                     config.setDriverClassName("com.mysql.cj.jdbc.Driver");
-                    
+
                     // Connection pool settings
                     config.setMaximumPoolSize(10);
                     config.setMinimumIdle(2);
                     config.setConnectionTimeout(30000);
                     config.setIdleTimeout(600000);
                     config.setMaxLifetime(1800000);
-                    
+
                     // Additional MySQL specific settings
                     config.addDataSourceProperty("cachePrepStmts", "true");
                     config.addDataSourceProperty("prepStmtCacheSize", "250");
                     config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
                     config.addDataSourceProperty("useServerPrepStmts", "true");
-                    
+
                     dataSource = new HikariDataSource(config);
                 }
             }
         }
     }
-    
+
     /**
      * Get a connection from the connection pool
      */
@@ -60,14 +61,14 @@ public class DatabaseConnection {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             try (Connection conn = DriverManager.getConnection(DB_SERVER_URL, DB_USER, DB_PASSWORD);
-                Statement stmt = conn.createStatement()) {
+                    Statement stmt = conn.createStatement()) {
                 stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS qa_test_db");
             }
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException("Failed to create database", e);
         }
     }
-    
+
     /**
      * Simple connection method for basic testing
      */
@@ -79,7 +80,7 @@ public class DatabaseConnection {
             throw new SQLException("MySQL JDBC Driver not found", e);
         }
     }
-    
+
     /**
      * Test database connectivity
      */
@@ -91,23 +92,23 @@ public class DatabaseConnection {
             return false;
         }
     }
-    
+
     /**
      * Execute a simple query to verify database is accessible
      */
     public static boolean verifyDatabaseAccess() {
         String testQuery = "SELECT 1";
         try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(testQuery)) {
-            
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(testQuery)) {
+
             return rs.next() && rs.getInt(1) == 1;
         } catch (SQLException e) {
             System.err.println("Database access verification failed: " + e.getMessage());
             return false;
         }
     }
-    
+
     /**
      * Close the data source (call this when shutting down the application)
      */
@@ -116,7 +117,7 @@ public class DatabaseConnection {
             dataSource.close();
         }
     }
-    
+
     /**
      * Get database metadata information
      */
@@ -133,23 +134,24 @@ public class DatabaseConnection {
             System.err.println("Failed to get database info: " + e.getMessage());
         }
     }
-    
+
     public static void main(String[] args) {
         System.out.println("Testing database connection...");
-        
+
         if (testConnection()) {
             System.out.println("✓ Database connection successful");
             printDatabaseInfo();
         } else {
             System.out.println("✗ Database connection failed");
         }
-        
+
         if (verifyDatabaseAccess()) {
             System.out.println("✓ Database access verified");
         } else {
             System.out.println("✗ Database access verification failed");
         }
-        
+
         closeDataSource();
     }
+
 }
