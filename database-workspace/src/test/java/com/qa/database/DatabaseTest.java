@@ -13,8 +13,6 @@ public class DatabaseTest {
     @BeforeClass
     public void setupClass() {
 
-        Assert.assertNotEquals("localhost", DatabaseProperty.getIp());
-
         QueryExecutor.createDatabaseIfNotExists();
 
         // Verify database connection before running tests

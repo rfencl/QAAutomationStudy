@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite tests="11" failures="0" name="com.qa.database.DatabaseTest" time="0.442" errors="0" skipped="0">
+<testsuite tests="11" failures="0" name="com.qa.database.DatabaseTest" time="0.211" errors="0" skipped="0">
   <properties>
-    <property name="jansi.mode" value="force"/>
     <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
-    <property name="java.vm.version" value="23.0.2+7"/>
-    <property name="sun.boot.library.path" value="/home/rick/.sdkman/candidates/java/23.0.2-tem/lib"/>
-    <property name="maven.multiModuleProjectDirectory" value="/home/rick/Documents/QAAutomationStudy/database-workspace"/>
+    <property name="java.vm.version" value="24.0.1+9"/>
+    <property name="sun.boot.library.path" value="/home/rick/.sdkman/candidates/java/24.0.1-tem/lib"/>
+    <property name="maven.multiModuleProjectDirectory" value="/mnt/d/QAAutomationStudy/database-workspace"/>
     <property name="java.vm.vendor" value="Eclipse Adoptium"/>
     <property name="java.vendor.url" value="https://adoptium.net/"/>
-    <property name="guice.disable.misplaced.annotation.check" value="true"/>
     <property name="path.separator" value=":"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
     <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
-    <property name="user.country" value="US"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
-    <property name="user.dir" value="/home/rick/Documents/QAAutomationStudy/database-workspace"/>
+    <property name="user.dir" value="/mnt/d/QAAutomationStudy/database-workspace"/>
     <property name="java.vm.compressedOopsMode" value="Zero based"/>
-    <property name="java.runtime.version" value="23.0.2+7"/>
+    <property name="java.runtime.version" value="24.0.1+9"/>
     <property name="os.arch" value="amd64"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="line.separator" value="
@@ -30,44 +28,44 @@
     <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
     <property name="maven.conf" value="/usr/share/maven/conf"/>
     <property name="jdk.debug" value="release"/>
-    <property name="java.class.version" value="67.0"/>
+    <property name="java.class.version" value="68.0"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
-    <property name="os.version" value="6.8.0-78-generic"/>
+    <property name="os.version" value="6.6.87.2-microsoft-standard-WSL2"/>
     <property name="library.jansi.path" value="/usr/share/maven/lib/jansi-native"/>
     <property name="user.home" value="/home/rick"/>
     <property name="user.timezone" value="America/Los_Angeles"/>
     <property name="file.encoding" value="UTF-8"/>
-    <property name="java.specification.version" value="23"/>
+    <property name="java.specification.version" value="24"/>
     <property name="user.name" value="rick"/>
     <property name="java.class.path" value="/usr/share/maven/boot/plexus-classworlds-2.x.jar"/>
-    <property name="java.vm.specification.version" value="23"/>
+    <property name="java.vm.specification.version" value="24"/>
     <property name="sun.arch.data.model" value="64"/>
     <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher test"/>
-    <property name="java.home" value="/home/rick/.sdkman/candidates/java/23.0.2-tem"/>
+    <property name="java.home" value="/home/rick/.sdkman/candidates/java/24.0.1-tem"/>
     <property name="user.language" value="en"/>
     <property name="java.specification.vendor" value="Oracle Corporation"/>
     <property name="java.vm.info" value="mixed mode, sharing"/>
-    <property name="java.version" value="23.0.2"/>
+    <property name="java.version" value="24.0.1"/>
     <property name="native.encoding" value="UTF-8"/>
     <property name="java.vendor" value="Eclipse Adoptium"/>
     <property name="maven.home" value="/usr/share/maven"/>
     <property name="file.separator" value="/"/>
-    <property name="java.version.date" value="2025-01-21"/>
+    <property name="java.version.date" value="2025-04-15"/>
     <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="sun.cpu.endian" value="little"/>
-    <property name="java.vendor.version" value="Temurin-23.0.2+7"/>
+    <property name="java.vendor.version" value="Temurin-24.0.1+9"/>
   </properties>
-  <testcase classname="com.qa.database.DatabaseTest" name="testDatabaseConnection" time="0.132"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testUsersRegisteredInLastSevenDays" time="0.032"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testFindDuplicateEmails" time="0.012"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testSecondHighestSalary" time="0.02"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithMoreThanFiveOrders" time="0.011"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithNoOrders" time="0.013"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testVerifyUIInsertReflectedInDB" time="0.035"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testBankingTransferValidation" time="0.076"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testQueryPerformance" time="0.01"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testDataIntegrityConstraints" time="0.07"/>
-  <testcase classname="com.qa.database.DatabaseTest" name="testEdgeCases" time="0.031"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testDatabaseConnection" time="0.071"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testUsersRegisteredInLastSevenDays" time="0.019"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testFindDuplicateEmails" time="0.004"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testSecondHighestSalary" time="0.005"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithMoreThanFiveOrders" time="0.007"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testCustomersWithNoOrders" time="0.005"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testVerifyUIInsertReflectedInDB" time="0.017"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testBankingTransferValidation" time="0.035"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testQueryPerformance" time="0.002"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testDataIntegrityConstraints" time="0.042"/>
+  <testcase classname="com.qa.database.DatabaseTest" name="testEdgeCases" time="0.004"/>
 </testsuite>
