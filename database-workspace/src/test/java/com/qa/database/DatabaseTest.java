@@ -42,7 +42,8 @@ public class DatabaseTest {
     @Test(priority = 2, groups = {"regression"})
     public void testUsersRegisteredInLastSevenDays() {
         List<Map<String, Object>> recentUsers = QueryExecutor.getUsersRegisteredInLastDays(7);
-        
+        System.out.println("There are " + recentUsers.size() + " recent users: ");
+        System.out.println("Number of Users in table: " + QueryExecutor.getRecordCount("users", null));
         Assert.assertNotNull(recentUsers, "Query should return results");
         Assert.assertTrue(recentUsers.size() > 0, "Should find users registered in last 7 days");
         
