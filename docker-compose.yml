@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  mysql-test-db:
+    image: mysql:latest
+    container_name: mysql-test-db
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=qa_test_db
+      - MYSQL_USER=qa_user
+      - MYSQL_PASSWORD=qa_password
