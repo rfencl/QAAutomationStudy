@@ -5,12 +5,16 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import java.time.Duration;
 
 /**
  * Page Object Model (POM) implementation for Login Page
  */
 public class LoginPage {
     private WebDriver driver;
+    private WebDriverWait wait;
     
     // Using @FindBy annotations (Page Factory pattern)
     @FindBy(id = "username")
@@ -19,20 +23,25 @@ public class LoginPage {
     @FindBy(id = "password")
     private WebElement passwordField;
     
-    @FindBy(id = "login")
+    @FindBy(xpath = "//button[@type='submit']")
     private WebElement loginButton;
     
-    @FindBy(xpath = "//div[@class='error-message']")
+    @FindBy(xpath = "//div[contains(@class,'flash error')]")
     private WebElement errorMessage;
+    
+    @FindBy(xpath = "//div[@class='flash-success']")
+    private WebElement successMessage;
     
     // Traditional locators (without Page Factory)
     private By username = By.id("username");
     private By password = By.id("password");
-    private By loginBtn = By.id("login");
-    private By errorMsg = By.xpath("//div[@class='error-message']");
+    private By loginBtn = By.xpath("//button[@type='submit']");
+    private By errorMsg = By.xpath("//div[contains(@class,'flash error')]");
+    private By successMsg = By.xpath("//div[@class='flash-success']");
     
     public LoginPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         PageFactory.initElements(driver, this);
     }
     
@@ -51,16 +60,32 @@ public class LoginPage {
         driver.findElement(username).sendKeys(user);
         driver.findElement(password).clear();
         driver.findElement(password).sendKeys(pass);
-        driver.findElement(loginBtn).click();
+        
+        // Wait for login button to be clickable then click
+        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(loginBtn));
+        loginButton.click();
+        
+        // Wait a moment for the page to process the login
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
     
     public String getErrorMessage() {
-        return driver.findElement(errorMsg).getText();
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMsg));
+            return element.getText();
+        } catch (Exception e) {
+            return "";
+        }
     }
     
     public boolean isErrorMessageDisplayed() {
         try {
-            return driver.findElement(errorMsg).isDisplayed();
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMsg));
+            return element.isDisplayed();
         } catch (Exception e) {
             return false;
         }
@@ -73,5 +98,27 @@ public class LoginPage {
     
     public String getPageTitle() {
         return driver.getTitle();
+    }
+    
+    public boolean isLoginSuccessful() {
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[contains(@class,'flash success')]"))
+            );
+            return element.isDisplayed();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    public String getSuccessMessage() {
+        try {
+            WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(
+                By.xpath("//div[contains(@class,'flash success')]"))
+            );
+            return element.getText();
+        } catch (Exception e) {
+            return "";
+        }
     }
 }

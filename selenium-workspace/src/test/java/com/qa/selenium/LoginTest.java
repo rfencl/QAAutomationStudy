@@ -1,12 +1,17 @@
 package com.qa.selenium;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
 import org.testng.annotations.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginTest {
     private WebDriver driver;
@@ -19,8 +24,16 @@ public class LoginTest {
         // Setup WebDriver based on browser parameter
         switch (browser.toLowerCase()) {
             case "chrome":
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("profile.password_manager_leak_detection", false);
                 WebDriverManager.chromedriver().setup();
-                driver = new ChromeDriver();
+                ChromeOptions chromeOptions = new ChromeOptions();
+                chromeOptions.addArguments("--no-sandbox");
+                chromeOptions.addArguments("--disable-dev-shm-usage");
+                chromeOptions.addArguments("--disable-gpu");
+                chromeOptions.addArguments("--window-size=1920,1080");
+                chromeOptions.setExperimentalOption("prefs", prefs);
+                driver = new ChromeDriver(chromeOptions);
                 break;
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
@@ -39,33 +52,49 @@ public class LoginTest {
         seleniumHelper = new SeleniumHelper(driver);
         
         // Navigate to login page (replace with actual URL)
-        driver.get("https://example.com/login");
+        driver.get("https://the-internet.herokuapp.com/login");
     }
     
     @Test(priority = 1)
     public void testValidLogin() {
-        loginPage.login("qa_user", "pass123");
+        loginPage.login("tomsmith", "SuperSecretPassword!");
         
-        // Verify successful login (adjust based on actual application behavior)
-        String currentUrl = driver.getCurrentUrl();
-        Assert.assertTrue(currentUrl.contains("dashboard") || currentUrl.contains("home"), 
-                         "Should redirect to dashboard after successful login");
+        // Verify successful login message
+        Assert.assertTrue(loginPage.isLoginSuccessful(), 
+                         "Should show success message after valid login");
+        
+        String successText = loginPage.getSuccessMessage();
+        Assert.assertTrue(successText.contains("You logged into a secure area!"), 
+                         "Success message should contain 'You logged into a secure area!'");
     }
     
     @Test(priority = 2)
-    public void testInvalidLogin() {
-        loginPage.login("invalid_user", "wrong_password");
+    public void testInvalidUsername() {
+        loginPage.login("invalid_user", "SuperSecretPassword!");
         
         // Verify error message is displayed
         Assert.assertTrue(loginPage.isErrorMessageDisplayed(), 
-                         "Error message should be displayed for invalid credentials");
+                         "Error message should be displayed for invalid username");
         
         String errorText = loginPage.getErrorMessage();
-        Assert.assertTrue(errorText.contains("Invalid") || errorText.contains("incorrect"), 
-                         "Error message should indicate invalid credentials");
+        Assert.assertTrue(errorText.contains("Your username is invalid!"), 
+                         "Error message should contain 'Your username is invalid!'");
     }
     
     @Test(priority = 3)
+    public void testInvalidPassword() {
+        loginPage.login("tomsmith", "wrong_password");
+        
+        // Verify error message is displayed
+        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), 
+                         "Error message should be displayed for invalid password");
+        
+        String errorText = loginPage.getErrorMessage();
+        Assert.assertTrue(errorText.contains("Your password is invalid!"), 
+                         "Error message should contain 'Your password is invalid!'");
+    }
+    
+    @Test(priority = 4)
     public void testEmptyCredentials() {
         loginPage.login("", "");
         
@@ -75,7 +104,7 @@ public class LoginTest {
                          "Should show validation error or stay on login page");
     }
     
-    @Test(priority = 4)
+    @Test(priority = 5)
     public void testSQLInjectionAttempt() {
         String sqlInjection = "' OR '1'='1";
         loginPage.login(sqlInjection, sqlInjection);
@@ -85,7 +114,7 @@ public class LoginTest {
                          "Should not allow SQL injection and stay on login page");
     }
     
-    @Test(priority = 5)
+    @Test(priority = 6)
     public void testSpecialCharacters() {
         String specialChars = "!@#$%^&*()";
         loginPage.login(specialChars, specialChars);
@@ -96,14 +125,14 @@ public class LoginTest {
                          "Should handle special characters gracefully");
     }
     
-    @Test(priority = 6, groups = {"smoke"})
+    @Test(priority = 7, groups = {"smoke"})
     public void testPageTitle() {
         String title = loginPage.getPageTitle();
-        Assert.assertTrue(title.contains("Login") || title.contains("Sign In"), 
+        Assert.assertTrue(title.contains("The Internet"), 
                          "Page title should indicate login page");
     }
     
-    @Test(priority = 7, groups = {"regression"})
+    @Test(priority = 8, groups = {"regression"})
     public void testFieldClearing() {
         // Enter some text
         loginPage.login("test_user", "test_pass");
