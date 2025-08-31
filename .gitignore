@@ -1,53 +1,5 @@
 */target/
 **/target/
 database-workspace/target/
-/database-workspace/.idea
-/database-workspace/target/
-database-workspace/target/surefire-reports/com.qa.database.DatabaseTest/testng-failed.xml
-database-workspace/target/surefire-reports/emailable-report.html
-database-workspace/target/surefire-reports/failed.png
-database-workspace/target/surefire-reports/index.html
-database-workspace/target/surefire-reports/jquery-3.6.0.min.js
-database-workspace/target/surefire-reports/junitreports/TEST-com.qa.database.DatabaseTest.xml
-database-workspace/target/surefire-reports/navigator-bullet.png
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/classes.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/Command line test.properties
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/groups.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/index.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/main.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/methods-alphabetical.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/methods-not-run.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/methods.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/reporter-output.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/testng.xml.html
-database-workspace/target/surefire-reports/old/com.qa.database.DatabaseTest/toc.html
-database-workspace/target/surefire-reports/old/index.html
-database-workspace/target/surefire-reports/old/Surefire suite/classes.html
-database-workspace/target/surefire-reports/old/Surefire suite/groups.html
-database-workspace/target/surefire-reports/old/Surefire suite/index.html
-database-workspace/target/surefire-reports/old/Surefire suite/main.html
-database-workspace/target/surefire-reports/old/Surefire suite/methods-alphabetical.html
-database-workspace/target/surefire-reports/old/Surefire suite/methods-not-run.html
-database-workspace/target/surefire-reports/old/Surefire suite/methods.html
-database-workspace/target/surefire-reports/old/Surefire suite/reporter-output.html
-database-workspace/target/surefire-reports/old/Surefire suite/Surefire test.properties
-database-workspace/target/surefire-reports/old/Surefire suite/testng.xml.html
-database-workspace/target/surefire-reports/old/Surefire suite/toc.html
-database-workspace/target/surefire-reports/passed.png
-database-workspace/target/surefire-reports/skipped.png
-database-workspace/target/surefire-reports/Surefire suite/Surefire test.html
-database-workspace/target/surefire-reports/Surefire suite/Surefire test.xml
-database-workspace/target/surefire-reports/Surefire suite/testng-failed.xml
-database-workspace/target/surefire-reports/TEST-com.qa.database.DatabaseTest.xml
-database-workspace/target/surefire-reports/testng-failed.xml
-database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
-database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
-database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
-database-workspace/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
-database-workspace/target/maven-status/maven-compiler-plugin/testCompile/default-testCompile/inputFiles.lst
-database-workspace/target/surefire-reports/com.qa.database.DatabaseTest.txt
-database-workspace/target/surefire-reports/com.qa.database.DatabaseTest/Command line test.html
-/database-workspace/target
+database-workspace/.idea
+selenium-advanced/allure-results/

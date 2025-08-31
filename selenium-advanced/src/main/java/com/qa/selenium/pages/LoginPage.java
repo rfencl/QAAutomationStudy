@@ -47,7 +47,14 @@ public class LoginPage {
     // Constructor
     public LoginPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = BaseTest.getWait();
+        this.wait = new WebDriverWait(driver, java.time.Duration.ofSeconds(20));
+        PageFactory.initElements(driver, this);
+    }
+    
+    // Constructor with custom wait
+    public LoginPage(WebDriver driver, WebDriverWait wait) {
+        this.driver = driver;
+        this.wait = wait;
         PageFactory.initElements(driver, this);
     }
     

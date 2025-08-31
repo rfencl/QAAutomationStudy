@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="SeleniumTestSuite">
+    
+    <test name="LoginTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.selenium.LoginTest"/>
+        </classes>
+    </test>
+    
+</suite>
