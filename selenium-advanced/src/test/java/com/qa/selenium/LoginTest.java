@@ -13,6 +13,8 @@ import com.qa.selenium.pages.LoginPage;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginTest {
     private LoginPage loginPage;
@@ -25,12 +27,15 @@ public class LoginTest {
         // Setup WebDriver based on browser parameter
         switch (browser.toLowerCase()) {
             case "chrome":
+                Map<String, Object> prefs = new HashMap<>();
+                prefs.put("profile.password_manager_leak_detection", false);
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.addArguments("--no-sandbox");
                 chromeOptions.addArguments("--disable-dev-shm-usage");
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--window-size=1920,1080");
+                chromeOptions.setExperimentalOption("prefs", prefs);
                 driver = new ChromeDriver(chromeOptions);
                 break;
             case "firefox":
@@ -46,7 +51,7 @@ public class LoginTest {
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
-        
+
         // Create WebDriverWait
         wait = new WebDriverWait(driver, Duration.ofSeconds(20));
     }
@@ -56,7 +61,7 @@ public class LoginTest {
         if (driver != null) {
             // Clear cookies before each test
             driver.manage().deleteAllCookies();
-            
+
             // Initialize page object
             loginPage = new LoginPage(driver, wait);
             loginPage.navigateToLoginPage();
@@ -148,7 +153,7 @@ public class LoginTest {
             driver.manage().deleteAllCookies();
         }
     }
-    
+
     @AfterClass
     public void teardownClass() {
         if (driver != null) {
