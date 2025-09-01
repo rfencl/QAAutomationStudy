@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="LoginTestSuite" parallel="methods" thread-count="3">
+<suite name="TheInternetTestSuite" parallel="methods" thread-count="4">
     <test name="ChromeTests">
         <parameter name="browser" value="chrome"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
+            <class name="com.qa.selenium.CheckboxesTest"/>
+            <class name="com.qa.selenium.DropdownTest"/>
+            <class name="com.qa.selenium.JavaScriptAlertsTest"/>
         </classes>
     </test>
     
@@ -11,6 +14,9 @@
         <parameter name="browser" value="firefox"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
+            <class name="com.qa.selenium.CheckboxesTest"/>
+            <class name="com.qa.selenium.DropdownTest"/>
+            <class name="com.qa.selenium.JavaScriptAlertsTest"/>
         </classes>
     </test>
 </suite>
