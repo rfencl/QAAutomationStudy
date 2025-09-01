@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="SeleniumTestSuite" parallel="tests" thread-count="2">
-    
+<suite name="LoginTestSuite" parallel="methods" thread-count="3">
     <test name="ChromeTests">
         <parameter name="browser" value="chrome"/>
-        <groups>
-            <run>
-                <include name="smoke"/>
-            </run>
-        </groups>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
         </classes>
@@ -15,21 +9,8 @@
     
     <test name="FirefoxTests">
         <parameter name="browser" value="firefox"/>
-        <groups>
-            <run>
-                <include name="regression"/>
-            </run>
-        </groups>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
         </classes>
     </test>
-    
-    <test name="AllTests">
-        <parameter name="browser" value="chrome"/>
-        <classes>
-            <class name="com.qa.selenium.LoginTest"/>
-        </classes>
-    </test>
-    
 </suite>
