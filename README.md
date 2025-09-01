@@ -2,6 +2,32 @@
 
 This repository contains comprehensive workspaces for advanced QA automation learning, covering all the key areas mentioned in your study plan. Each workspace includes practical exercises, real-world examples, and hands-on implementations.
 
+### 11. TestDataFactory Workspace (`testdatafactory-workspace/`)
+**Focus**: Builder pattern implementation for creating complex test data objects
+
+**Key Topics Covered**:
+- Builder pattern for fluent API design
+- Test data factory with entity tracking
+- Random data generation with JavaFaker
+- Entity relationships and validation
+- Thread-safe data management
+- Automatic cleanup and resource management
+
+**Exercises Implemented**:
+- ✅ **TestDataFactory** - Main factory class for creating and managing test data
+- ✅ **UserBuilder & OrderBuilder** - Builder pattern implementations with fluent API
+- ✅ **Entity Classes** - User, Order, and OrderItem domain objects
+- ✅ **TestDataFactoryTest** - Comprehensive unit tests for all functionality
+- ✅ **TestDataFactoryExampleTest** - Real-world usage scenarios and workflows
+
+**Key Features**:
+- Fluent API for readable test data creation
+- Random data generation with realistic values
+- Entity relationship management (User -> Order)
+- Built-in validation for required fields
+- Automatic entity tracking for cleanup
+- Thread-safe concurrent operations
+
 ### 10. Retry Workspace (`retry-workspace/`)
 **Focus**: Robust retry mechanism for handling flaky tests
 
@@ -628,8 +654,8 @@ Feel free to extend these workspaces with:
 | **qa-concepts** | ✅ Complete | N/A | N/A | Theory, methodologies, best practices |
 
 ### Code Metrics
-- **Total Workspaces**: 9
-- **Maven Projects**: 6
+- **Total Workspaces**: 10
+- **Maven Projects**: 7
 - **Page Objects**: 13+ (across selenium workspaces)
 - **Test Classes**: 15+
 - **Test Methods**: 50+
@@ -687,7 +713,7 @@ All workspaces follow industry best practices and are production-ready:
 This comprehensive workspace collection provides everything needed for advanced QA automation learning and interview preparation. Each component is production-ready and follows industry best practices.
 
 ### 🎆 Achievement Summary
-- **9 Complete Workspaces** covering all aspects of QA automation
+- **10 Complete Workspaces** covering all aspects of QA automation
 - **50+ Test Methods** with comprehensive coverage
 - **Parallel Execution** with up to 6 concurrent threads
 - **Advanced Java Features** including functional programming
