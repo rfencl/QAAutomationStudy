@@ -1,0 +1,71 @@
+@startuml Configuration Management Sequence Diagram
+
+actor TestClass
+participant TestConfig
+participant ConfigurationManager
+participant Environment
+participant "Properties Files" as Props
+participant "YAML File" as YAML
+participant "System Properties" as SysProps
+participant "Environment Variables" as EnvVars
+
+TestClass -> TestConfig: getBrowserType()
+activate TestConfig
+
+TestConfig -> ConfigurationManager: getInstance()
+activate ConfigurationManager
+
+alt first time initialization
+    ConfigurationManager -> Environment: fromString(System.getProperty("env"))
+    activate Environment
+    Environment -> SysProps: getProperty("env")
+    SysProps --> Environment: "dev" (or null)
+    Environment --> ConfigurationManager: Environment.DEV
+    deactivate Environment
+    
+    ConfigurationManager -> ConfigurationManager: loadConfigurations()
+    
+    ConfigurationManager -> Props: loadPropertiesFile("application.properties")
+    Props --> ConfigurationManager: base properties
+    
+    ConfigurationManager -> Props: loadPropertiesFile("application-dev.properties")
+    Props --> ConfigurationManager: environment-specific properties
+    
+    ConfigurationManager -> YAML: loadYamlFile("config.yaml")
+    YAML --> ConfigurationManager: YAML configuration
+end
+
+ConfigurationManager --> TestConfig: ConfigurationManager instance
+deactivate ConfigurationManager
+
+TestConfig -> ConfigurationManager: getString("browser.type", "chrome")
+activate ConfigurationManager
+
+ConfigurationManager -> SysProps: getProperty("browser.type")
+SysProps --> ConfigurationManager: null (or system value)
+
+alt no system property
+    ConfigurationManager -> EnvVars: getenv("BROWSER_TYPE")
+    EnvVars --> ConfigurationManager: null (or env value)
+    
+    alt no environment variable
+        ConfigurationManager -> ConfigurationManager: configCache.get("browser.type")
+        ConfigurationManager --> ConfigurationManager: "chrome" (from properties/yaml)
+    end
+end
+
+ConfigurationManager --> TestConfig: "chrome"
+deactivate ConfigurationManager
+
+TestConfig --> TestClass: "chrome"
+deactivate TestConfig
+
+note right of ConfigurationManager
+Priority order:
+1. System Properties
+2. Environment Variables  
+3. Configuration Files
+4. Default Values
+end note
+
+@enduml

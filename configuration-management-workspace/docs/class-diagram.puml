@@ -1,0 +1,95 @@
+@startuml Configuration Management Class Diagram
+
+package "com.qa.config" {
+    enum Environment {
+        +DEV
+        +QA
+        +STAGING
+        +PROD
+        -name: String
+        +getName(): String
+        +fromString(env: String): Environment
+    }
+
+    class ConfigurationManager {
+        -instance: ConfigurationManager
+        -configCache: ConcurrentHashMap<String, Object>
+        -yamlMapper: ObjectMapper
+        -currentEnvironment: Environment
+        
+        -ConfigurationManager()
+        +getInstance(): ConfigurationManager
+        -loadConfigurations(): void
+        -loadPropertiesFile(filename: String): void
+        -loadYamlFile(filename: String): void
+        +getString(key: String): String
+        +getString(key: String, defaultValue: String): String
+        +getInt(key: String, defaultValue: int): int
+        +getBoolean(key: String, defaultValue: boolean): boolean
+        +getCurrentEnvironment(): Environment
+        +setProperty(key: String, value: Object): void
+        +clearCache(): void
+    }
+
+    class ConfigData {
+        -browser: BrowserConfig
+        -app: AppConfig
+        -database: DatabaseConfig
+        +getBrowser(): BrowserConfig
+        +getApp(): AppConfig
+        +getDatabase(): DatabaseConfig
+    }
+
+    class BrowserConfig {
+        -type: String
+        -headless: boolean
+        -timeout: int
+        +getType(): String
+        +isHeadless(): boolean
+        +getTimeout(): int
+    }
+
+    class AppConfig {
+        -url: String
+        -name: String
+        +getUrl(): String
+        +getName(): String
+    }
+
+    class DatabaseConfig {
+        -url: String
+        -username: String
+        -password: String
+        +getUrl(): String
+        +getUsername(): String
+        +getPassword(): String
+    }
+
+    class TestConfig {
+        -config: ConfigurationManager
+        +getBrowserType(): String
+        +isHeadless(): boolean
+        +getBrowserTimeout(): int
+        +getAppUrl(): String
+        +getAppName(): String
+        +getDatabaseUrl(): String
+        +getDatabaseUsername(): String
+        +getDatabasePassword(): String
+        +getEnvironment(): Environment
+        +isDevEnvironment(): boolean
+        +isProdEnvironment(): boolean
+    }
+}
+
+ConfigurationManager --> Environment : uses
+ConfigurationManager --> ConfigData : loads
+ConfigData *-- BrowserConfig
+ConfigData *-- AppConfig
+ConfigData *-- DatabaseConfig
+TestConfig --> ConfigurationManager : uses
+TestConfig --> Environment : returns
+
+note right of ConfigurationManager : Singleton pattern\nThread-safe caching\nMultiple config sources
+note right of TestConfig : Static utility methods\nConvenience wrapper
+
+@enduml

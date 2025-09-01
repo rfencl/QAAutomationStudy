@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="ConfigurationManagementSuite" parallel="tests" thread-count="3">
+    <test name="ConfigurationManagerTest">
+        <classes>
+            <class name="com.qa.tests.ConfigurationManagerTest"/>
+        </classes>
+    </test>
+    
+    <test name="TestConfigTest">
+        <classes>
+            <class name="com.qa.tests.TestConfigTest"/>
+        </classes>
+    </test>
+    
+    <test name="EnvironmentTest">
+        <classes>
+            <class name="com.qa.tests.EnvironmentTest"/>
+        </classes>
+    </test>
+</suite>

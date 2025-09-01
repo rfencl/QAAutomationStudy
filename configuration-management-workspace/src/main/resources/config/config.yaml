@@ -1,0 +1,13 @@
+browser:
+  type: chrome
+  headless: true
+  timeout: 10
+
+app:
+  url: https://the-internet.herokuapp.com/
+  name: Test Application
+
+database:
+  url: jdbc:h2:mem:testdb
+  username: sa
+  password: ""

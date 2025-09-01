@@ -1,0 +1,91 @@
+@startuml PageObjectFactory_SequenceDiagram
+
+actor TestRunner
+participant BaseTest
+participant WebDriverFactory
+participant WebDriver
+participant PageObjectFactory
+participant HomePage
+participant LoginPage
+participant BasePage
+
+== Test Setup ==
+TestRunner -> BaseTest: setUp(browser, headless)
+BaseTest -> WebDriverFactory: createDriver(browser, headless)
+WebDriverFactory -> WebDriver: new ChromeDriver(options)
+WebDriverFactory --> BaseTest: WebDriver instance
+BaseTest -> PageObjectFactory: new PageObjectFactory(driver)
+PageObjectFactory --> BaseTest: factory instance
+
+== Page Object Creation (First Time) ==
+TestRunner -> BaseTest: test method execution
+BaseTest -> WebDriver: get("https://the-internet.herokuapp.com/")
+BaseTest -> PageObjectFactory: getHomePage()
+PageObjectFactory -> PageObjectFactory: pageCache.computeIfAbsent(HomePage.class, this::createPage)
+PageObjectFactory -> PageObjectFactory: createPage(HomePage.class)
+PageObjectFactory -> HomePage: new HomePage(driver)
+HomePage -> BasePage: super(driver)
+BasePage -> BasePage: PageFactory.initElements(driver, this)
+HomePage --> PageObjectFactory: HomePage instance
+PageObjectFactory -> PageObjectFactory: cache.put(HomePage.class, homePage)
+PageObjectFactory --> BaseTest: HomePage instance
+
+== Page Object Reuse (Cached) ==
+BaseTest -> PageObjectFactory: getHomePage()
+PageObjectFactory -> PageObjectFactory: pageCache.get(HomePage.class)
+PageObjectFactory --> BaseTest: cached HomePage instance
+
+== Page Interaction ==
+BaseTest -> HomePage: clickFormAuthentication()
+HomePage -> WebDriver: formAuthLink.click()
+
+== Different Page Object Creation ==
+BaseTest -> PageObjectFactory: getLoginPage()
+PageObjectFactory -> PageObjectFactory: pageCache.computeIfAbsent(LoginPage.class, this::createPage)
+PageObjectFactory -> PageObjectFactory: createPage(LoginPage.class)
+PageObjectFactory -> LoginPage: new LoginPage(driver)
+LoginPage -> BasePage: super(driver)
+BasePage -> BasePage: PageFactory.initElements(driver, this)
+LoginPage --> PageObjectFactory: LoginPage instance
+PageObjectFactory -> PageObjectFactory: cache.put(LoginPage.class, loginPage)
+PageObjectFactory --> BaseTest: LoginPage instance
+
+== Login Flow ==
+BaseTest -> LoginPage: enterUsername("tomsmith")
+LoginPage -> WebDriver: usernameField.sendKeys("tomsmith")
+LoginPage --> BaseTest: LoginPage (fluent interface)
+BaseTest -> LoginPage: enterPassword("SuperSecretPassword!")
+LoginPage -> WebDriver: passwordField.sendKeys("SuperSecretPassword!")
+LoginPage --> BaseTest: LoginPage (fluent interface)
+BaseTest -> LoginPage: clickLogin()
+LoginPage -> WebDriver: loginButton.click()
+BaseTest -> LoginPage: isLoginSuccessful()
+LoginPage -> WebDriver: getCurrentUrl()
+WebDriver --> LoginPage: current URL
+LoginPage --> BaseTest: boolean result
+
+== Cache Management ==
+BaseTest -> PageObjectFactory: getCacheSize()
+PageObjectFactory --> BaseTest: cache size
+BaseTest -> PageObjectFactory: clearCache()
+PageObjectFactory -> PageObjectFactory: pageCache.clear()
+
+== Test Teardown ==
+TestRunner -> BaseTest: tearDown()
+BaseTest -> WebDriver: quit()
+WebDriver -> WebDriver: close browser
+
+== Generic Page Creation ==
+BaseTest -> PageObjectFactory: getPage(HomePage.class)
+PageObjectFactory -> PageObjectFactory: pageCache.computeIfAbsent(pageClass, this::createPage)
+alt page not in cache
+    PageObjectFactory -> PageObjectFactory: createPage(pageClass)
+    PageObjectFactory -> HomePage: pageClass.getConstructor(WebDriver.class).newInstance(driver)
+    HomePage -> BasePage: super(driver)
+    HomePage --> PageObjectFactory: page instance
+else page in cache
+    PageObjectFactory -> PageObjectFactory: return cached instance
+end
+PageObjectFactory --> BaseTest: page instance
+
+@enduml

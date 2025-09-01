@@ -1,105 +1,212 @@
-# Practice Problem 8: Design a Test Configuration Management System
+# Practice Problem 8: Configuration Management
 
 ## Problem Statement
-Design a comprehensive configuration management system for test automation that handles environment-specific settings, supports multiple configuration sources, provides runtime configuration updates, and ensures secure handling of sensitive data.
+
+Design and implement a comprehensive configuration management system for a QA automation framework that can handle multiple configuration sources, environment-specific settings, and runtime configuration updates.
 
 ## Requirements
 
-### Functional Requirements
-1. **Multi-Source Configuration**: Support files, environment variables, system properties
-2. **Environment Management**: Handle dev, test, staging, production configurations
-3. **Runtime Updates**: Allow configuration changes without restart
-4. **Hierarchical Configuration**: Support configuration inheritance and overrides
-5. **Validation**: Validate configuration values and dependencies
-6. **Encryption**: Secure handling of passwords and API keys
-7. **Caching**: Efficient configuration caching with refresh capabilities
+### Core Functionality
+1. **Multiple Configuration Sources**
+   - Properties files (application.properties, environment-specific files)
+   - YAML configuration files
+   - System properties (-D parameters)
+   - Environment variables
+   - Runtime configuration updates
 
-### Non-Functional Requirements
-1. **Performance**: Sub-millisecond configuration retrieval
-2. **Security**: Encrypted storage of sensitive configuration
-3. **Reliability**: Fallback mechanisms for configuration failures
-4. **Maintainability**: Easy to add new configuration properties
+2. **Priority-Based Configuration Loading**
+   - System properties should have highest priority
+   - Environment variables should override file-based configuration
+   - Environment-specific files should override base configuration
+   - Provide sensible defaults for all configuration values
 
-## Implementation Approach
+3. **Environment Management**
+   - Support for multiple environments (DEV, QA, STAGING, PROD)
+   - Automatic environment detection from system properties
+   - Environment-specific configuration loading
+   - Environment-aware utility methods
 
-### Configuration Manager
+4. **Thread Safety**
+   - Singleton configuration manager
+   - Thread-safe access to configuration values
+   - Concurrent caching mechanism
+   - No shared mutable state issues
+
+5. **Type Safety**
+   - Support for String, int, boolean configuration values
+   - Proper type conversion with error handling
+   - Default value support for missing configurations
+   - Validation of configuration values
+
+### Technical Requirements
+
+1. **Configuration Manager**
+   - Implement singleton pattern for global configuration access
+   - Provide methods for getting configuration values with defaults
+   - Support runtime configuration updates
+   - Implement configuration caching for performance
+
+2. **Environment Abstraction**
+   - Create enum for supported environments
+   - Implement environment detection logic
+   - Provide environment-specific configuration loading
+   - Support case-insensitive environment specification
+
+3. **Utility Layer**
+   - Create convenience methods for common configuration access
+   - Implement type-safe getters for different data types
+   - Provide environment-specific utility methods
+   - Support configuration validation
+
+4. **Testing**
+   - Unit tests for configuration loading and priority
+   - Tests for environment detection and switching
+   - Tests for type conversion and default values
+   - Tests for thread safety and concurrent access
+
+### Configuration Structure
+
+```
+config/
+├── application.properties          # Base configuration
+├── application-dev.properties      # Development overrides
+├── application-qa.properties       # QA environment overrides
+├── application-staging.properties  # Staging environment overrides
+├── application-prod.properties     # Production environment overrides
+└── config.yaml                    # YAML-based configuration
+```
+
+### Expected Configuration Properties
+
+```properties
+# Browser Configuration
+browser.type=chrome
+browser.headless=true
+browser.timeout=10
+
+# Application Configuration
+app.url=https://example.com
+app.name=Test Application
+
+# Database Configuration
+database.url=jdbc:h2:mem:testdb
+database.username=sa
+database.password=
+
+# Test Configuration
+test.retry.count=2
+test.parallel.threads=4
+```
+
+## Implementation Guidelines
+
+### 1. Configuration Manager Design
 ```java
-@Component
-public class TestConfigurationManager {
-    private final Map<String, ConfigurationSource> sources;
-    private final ConfigurationCache cache;
-    private final EncryptionService encryptionService;
-    
-    public <T> T getProperty(String key, Class<T> type) {
-        return getProperty(key, type, null);
-    }
-    
-    public <T> T getProperty(String key, Class<T> type, T defaultValue) {
-        String value = cache.get(key);
-        
-        if (value == null) {
-            value = resolveProperty(key);
-            if (value != null) {
-                cache.put(key, value);
-            }
-        }
-        
-        return convertValue(value, type, defaultValue);
-    }
-    
-    private String resolveProperty(String key) {
-        for (ConfigurationSource source : sources.values()) {
-            String value = source.getProperty(key);
-            if (value != null) {
-                return isEncrypted(value) ? encryptionService.decrypt(value) : value;
-            }
-        }
-        return null;
-    }
+public class ConfigurationManager {
+    // Singleton implementation
+    // Configuration caching
+    // Multiple source loading
+    // Priority-based resolution
+    // Thread-safe operations
 }
 ```
 
-### Environment-Specific Configuration
+### 2. Environment Management
 ```java
-@Configuration
-public class EnvironmentConfiguration {
-    
-    @Bean
-    @Profile("test")
-    public TestConfiguration testConfiguration() {
-        return TestConfiguration.builder()
-            .baseUrl("http://test.example.com")
-            .databaseUrl("jdbc:h2:mem:testdb")
-            .timeout(Duration.ofSeconds(30))
-            .parallelThreads(4)
-            .headlessMode(true)
-            .build();
-    }
-    
-    @Bean
-    @Profile("staging")
-    public TestConfiguration stagingConfiguration() {
-        return TestConfiguration.builder()
-            .baseUrl("https://staging.example.com")
-            .databaseUrl("jdbc:postgresql://staging-db:5432/stagingdb")
-            .timeout(Duration.ofSeconds(60))
-            .parallelThreads(8)
-            .headlessMode(false)
-            .build();
-    }
+public enum Environment {
+    DEV, QA, STAGING, PROD;
+    // Environment detection
+    // Case-insensitive parsing
+    // Default environment handling
 }
 ```
+
+### 3. Utility Layer
+```java
+public class TestConfig {
+    // Static convenience methods
+    // Type-safe getters
+    // Environment-specific utilities
+    // Configuration validation
+}
+```
+
+### 4. Configuration Priority Order
+1. System Properties (-Dproperty=value)
+2. Environment Variables (PROPERTY_NAME=value)
+3. Environment-specific properties files
+4. Base properties file
+5. YAML configuration
+6. Default values
 
 ## Success Criteria
-1. **Multi-Source Support**: Successfully load from all configuration sources
-2. **Environment Switching**: Seamless environment-specific configuration
-3. **Security**: Encrypted sensitive data with secure key management
-4. **Performance**: Fast configuration retrieval with effective caching
-5. **Validation**: Comprehensive validation with clear error messages
 
-## Deliverables
-1. `ConfigurationManager.java` - Main configuration manager
-2. `ConfigurationSource.java` - Configuration source interface
-3. `EncryptionService.java` - Configuration encryption utilities
-4. `ConfigurationValidator.java` - Configuration validation
-5. `ConfigurationTest.java` - Comprehensive tests
+1. **Functionality**
+   - ✅ All configuration sources are properly loaded and merged
+   - ✅ Priority order is correctly implemented and tested
+   - ✅ Environment detection works automatically
+   - ✅ Type conversion handles all supported types safely
+   - ✅ Runtime configuration updates work correctly
+
+2. **Design Quality**
+   - ✅ Singleton pattern is properly implemented
+   - ✅ Thread safety is ensured for concurrent access
+   - ✅ Configuration caching improves performance
+   - ✅ Clean separation between manager and utility layers
+   - ✅ Proper error handling for missing/invalid configurations
+
+3. **Testing**
+   - ✅ Comprehensive unit tests cover all functionality
+   - ✅ Tests validate configuration priority and merging
+   - ✅ Environment switching is properly tested
+   - ✅ Type conversion edge cases are covered
+   - ✅ Thread safety is validated through concurrent tests
+
+4. **Documentation**
+   - ✅ Clear README with usage examples
+   - ✅ Configuration file examples for all environments
+   - ✅ Class and sequence diagrams showing architecture
+   - ✅ Integration examples with test frameworks
+
+## Bonus Features
+
+1. **Configuration Validation**
+   - Validate required configuration properties
+   - Implement configuration schema validation
+   - Provide meaningful error messages for invalid configurations
+
+2. **Configuration Monitoring**
+   - Track configuration access patterns
+   - Implement configuration change notifications
+   - Provide configuration usage statistics
+
+3. **Advanced Features**
+   - Support for encrypted configuration values
+   - Configuration hot-reloading without restart
+   - Integration with external configuration services
+
+## Real-World Applications
+
+This configuration management system can be used for:
+
+1. **Test Framework Configuration**
+   - Browser settings and capabilities
+   - Test environment URLs and credentials
+   - Test execution parameters and timeouts
+
+2. **CI/CD Integration**
+   - Environment-specific deployment configurations
+   - Build pipeline parameters
+   - Integration with configuration management tools
+
+3. **Multi-Environment Testing**
+   - Seamless switching between test environments
+   - Environment-specific test data and settings
+   - Consistent configuration across team members
+
+4. **Production Deployment**
+   - Secure handling of production credentials
+   - Environment-specific feature flags
+   - Performance and monitoring configurations
+
+This problem tests understanding of design patterns, configuration management, environment abstraction, thread safety, and comprehensive testing strategies essential for robust QA automation frameworks.

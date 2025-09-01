@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="PageObjectFactorySuite" verbose="1">
+    
+    <parameter name="browser" value="chrome"/>
+    <parameter name="headless" value="true"/>
+    
+    <test name="FactoryTests">
+        <classes>
+            <class name="com.qa.tests.PageObjectFactoryTest"/>
+        </classes>
+    </test>
+    
+    <test name="FunctionalTests">
+        <classes>
+            <class name="com.qa.tests.LoginTest"/>
+            <class name="com.qa.tests.CheckboxesTest"/>
+            <class name="com.qa.tests.DropdownTest"/>
+        </classes>
+    </test>
+    
+</suite>

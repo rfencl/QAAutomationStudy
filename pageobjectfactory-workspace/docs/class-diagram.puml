@@ -1,0 +1,142 @@
+@startuml PageObjectFactory_ClassDiagram
+
+!define RECTANGLE class
+
+abstract class BasePage {
+    #WebDriver driver
+    #WebDriverWait wait
+    +BasePage(driver)
+    +getTitle(): String
+    +getCurrentUrl(): String
+}
+
+class HomePage {
+    -WebElement formAuthLink
+    -WebElement checkboxesLink
+    -WebElement dropdownLink
+    -WebElement pageHeading
+    +HomePage(driver)
+    +clickFormAuthentication(): void
+    +clickCheckboxes(): void
+    +clickDropdown(): void
+    +getPageHeading(): String
+}
+
+class LoginPage {
+    -WebElement usernameField
+    -WebElement passwordField
+    -WebElement loginButton
+    -WebElement flashMessage
+    +LoginPage(driver)
+    +enterUsername(username): LoginPage
+    +enterPassword(password): LoginPage
+    +clickLogin(): void
+    +getFlashMessage(): String
+    +isLoginSuccessful(): boolean
+}
+
+class CheckboxesPage {
+    -List<WebElement> checkboxes
+    -WebElement pageHeading
+    +CheckboxesPage(driver)
+    +clickCheckbox(index): void
+    +isCheckboxSelected(index): boolean
+    +getCheckboxCount(): int
+    +getPageHeading(): String
+}
+
+class DropdownPage {
+    -WebElement dropdownElement
+    -WebElement pageHeading
+    +DropdownPage(driver)
+    +selectByValue(value): void
+    +selectByText(text): void
+    +getSelectedOption(): String
+    +getPageHeading(): String
+}
+
+class PageObjectFactory {
+    -WebDriver driver
+    -ConcurrentHashMap<Class<?>, Object> pageCache
+    +PageObjectFactory(driver)
+    +getPage<T>(pageClass): T
+    -createPage(pageClass): Object
+    +getHomePage(): HomePage
+    +getLoginPage(): LoginPage
+    +getCheckboxesPage(): CheckboxesPage
+    +getDropdownPage(): DropdownPage
+    +clearCache(): void
+    +getCacheSize(): int
+}
+
+class WebDriverFactory {
+    +createDriver(browserName): WebDriver
+    +createDriver(browserName, headless): WebDriver
+}
+
+abstract class BaseTest {
+    #WebDriver driver
+    #PageObjectFactory pageFactory
+    +setUp(browser, headless): void
+    +tearDown(): void
+}
+
+class PageObjectFactoryTest {
+    +testPageObjectCreation(): void
+    +testMultiplePageObjects(): void
+    +testCacheClear(): void
+    +testGenericPageCreation(): void
+}
+
+class LoginTest {
+    +testValidLogin(): void
+    +testInvalidLogin(): void
+    +testEmptyCredentials(): void
+}
+
+class CheckboxesTest {
+    +testCheckboxInteraction(): void
+    +testSecondCheckbox(): void
+    +testPageHeading(): void
+}
+
+class DropdownTest {
+    +testDropdownSelectionByValue(): void
+    +testDropdownSelectionByText(): void
+    +testPageHeading(): void
+    +testMultipleSelections(): void
+}
+
+interface WebDriver {
+    +get(url): void
+    +getTitle(): String
+    +getCurrentUrl(): String
+    +quit(): void
+}
+
+BasePage <|-- HomePage
+BasePage <|-- LoginPage
+BasePage <|-- CheckboxesPage
+BasePage <|-- DropdownPage
+
+PageObjectFactory *-- HomePage : creates
+PageObjectFactory *-- LoginPage : creates
+PageObjectFactory *-- CheckboxesPage : creates
+PageObjectFactory *-- DropdownPage : creates
+PageObjectFactory --> WebDriver : uses
+
+WebDriverFactory ..> WebDriver : creates
+
+BaseTest *-- WebDriver : uses
+BaseTest *-- PageObjectFactory : uses
+
+BaseTest <|-- PageObjectFactoryTest
+BaseTest <|-- LoginTest
+BaseTest <|-- CheckboxesTest
+BaseTest <|-- DropdownTest
+
+note right of PageObjectFactory : Factory Pattern with Caching
+note right of BasePage : Page Object Model Base Class
+note right of WebDriverFactory : Factory for WebDriver Creation
+
+@enduml

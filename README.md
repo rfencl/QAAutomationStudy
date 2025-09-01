@@ -2,6 +2,33 @@
 
 This repository contains comprehensive workspaces for advanced QA automation learning, covering all the key areas mentioned in your study plan. Each workspace includes practical exercises, real-world examples, and hands-on implementations.
 
+### 16. PageObjectFactory Workspace (`pageobjectfactory-workspace/`)
+**Focus**: Factory pattern implementation for efficient page object creation and management
+
+**Key Topics Covered**:
+- Factory design pattern for page object creation
+- Caching mechanism to avoid duplicate object instantiation
+- Generic type-safe page object creation
+- Fluent interface design for readable test code
+- Cross-browser WebDriver factory implementation
+- PageFactory integration with Selenium annotations
+
+**Exercises Implemented**:
+- ✅ **PageObjectFactory** - Main factory class with caching and generic page creation
+- ✅ **BasePage** - Abstract base class with common page functionality
+- ✅ **Page Objects** - HomePage, LoginPage, CheckboxesPage, DropdownPage with PageFactory
+- ✅ **WebDriverFactory** - Factory for creating WebDriver instances with different configurations
+- ✅ **Comprehensive Testing** - Factory behavior tests and functional validation
+- ✅ **PlantUML Diagrams** - Class and sequence diagrams for architecture documentation
+
+**Key Features**:
+- Thread-safe caching with ConcurrentHashMap
+- Generic type-safe page object creation
+- Fluent interface for method chaining
+- Cross-browser support (Chrome, Firefox)
+- Headless execution for CI/CD integration
+- Comprehensive test coverage for factory behavior
+
 ### 15. DatabaseConnectionPool Workspace (`databaseconnectionpool-workspace/`)
 **Focus**: Thread-safe database connection pool implementation with advanced resource management
 
@@ -758,11 +785,11 @@ Feel free to extend these workspaces with:
 | **qa-concepts** | ✅ Complete | N/A | N/A | Theory, methodologies, best practices |
 
 ### Code Metrics
-- **Total Workspaces**: 14
-- **Maven Projects**: 11
-- **Page Objects**: 13+ (across selenium workspaces)
-- **Test Classes**: 15+
-- **Test Methods**: 50+
+- **Total Workspaces**: 16
+- **Maven Projects**: 13
+- **Page Objects**: 17+ (across selenium workspaces)
+- **Test Classes**: 20+
+- **Test Methods**: 65+
 - **Parallel Threads**: Up to 6 concurrent
 - **Supported Browsers**: Chrome, Firefox
 - **Database Support**: H2, MySQL
@@ -817,8 +844,8 @@ All workspaces follow industry best practices and are production-ready:
 This comprehensive workspace collection provides everything needed for advanced QA automation learning and interview preparation. Each component is production-ready and follows industry best practices.
 
 ### 🎆 Achievement Summary
-- **14 Complete Workspaces** covering all aspects of QA automation
-- **50+ Test Methods** with comprehensive coverage
+- **16 Complete Workspaces** covering all aspects of QA automation
+- **65+ Test Methods** with comprehensive coverage
 - **Parallel Execution** with up to 6 concurrent threads
 - **Advanced Java Features** including functional programming
 - **Multi-Browser Support** with headless execution
