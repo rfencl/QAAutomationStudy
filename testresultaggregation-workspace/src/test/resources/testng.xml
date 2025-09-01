@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="TestResultAggregationSuite" verbose="1">
+    
+    <listeners>
+        <listener class-name="com.qa.results.TestResultListener"/>
+    </listeners>
+    
+    <test name="SampleTests">
+        <classes>
+            <class name="com.qa.results.SampleLoginTest"/>
+            <class name="com.qa.results.SampleFormTest"/>
+            <class name="com.qa.results.SampleNavigationTest"/>
+        </classes>
+    </test>
+    
+    <test name="AggregatorTests">
+        <classes>
+            <class name="com.qa.results.TestResultAggregatorTest"/>
+        </classes>
+    </test>
+    
+</suite>
