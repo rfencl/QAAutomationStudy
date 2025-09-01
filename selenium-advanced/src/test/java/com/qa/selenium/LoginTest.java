@@ -16,7 +16,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LoginTest {
+public class LoginTest extends BaseTest{
     private LoginPage loginPage;
     
     // ThreadLocal for parallel execution
@@ -25,10 +25,9 @@ public class LoginTest {
 
     @Parameters({"browser", "headless"})
     @BeforeClass
-    public void setupClass(@Optional("chrome") String browser, @Optional("false") String headless) {
-        WebDriver driver = createDriver(browser, Boolean.parseBoolean(headless));
-        
-        // Configure driver
+    public void setupClass(@Optional("chrome") String browser, @Optional("true") String headless) {
+        super.setupClass(browser, headless);
+        WebDriver driver = createDriver(browser, isHeadless);        // Configure driver
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));

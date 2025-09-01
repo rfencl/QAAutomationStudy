@@ -12,15 +12,16 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DynamicLoadingTest {
+public class DynamicLoadingTest extends BaseTest {
     private DynamicLoadingPage dynamicPage;
     private static ThreadLocal<WebDriver> driverThreadLocal = new ThreadLocal<>();
     private static ThreadLocal<WebDriverWait> waitThreadLocal = new ThreadLocal<>();
 
     @Parameters({"browser", "headless"})
     @BeforeClass
-    public void setupClass(@Optional("chrome") String browser, @Optional("false") String headless) {
-        WebDriver driver = createDriver(browser, Boolean.parseBoolean(headless));
+    public void setupClass(@Optional("chrome") String browser, @Optional("true") String headless) {
+        super.setupClass(browser, headless);
+        WebDriver driver = createDriver(browser, isHeadless);
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driverThreadLocal.set(driver);
