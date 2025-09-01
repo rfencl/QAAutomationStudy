@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="TheInternetTestSuite" parallel="tests" thread-count="6">
+<suite name="TheInternetTestSuite-Headless" parallel="tests" thread-count="6">
     
     <test name="LoginTests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
         </classes>
@@ -11,7 +11,7 @@
     
     <test name="CheckboxTests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.CheckboxesTest"/>
         </classes>
@@ -19,7 +19,7 @@
     
     <test name="DropdownTests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.DropdownTest"/>
         </classes>
@@ -27,7 +27,7 @@
     
     <test name="AlertTests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.JavaScriptAlertsTest"/>
         </classes>
@@ -35,7 +35,7 @@
     
     <test name="DynamicLoadingTests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.DynamicLoadingTest"/>
         </classes>
@@ -43,7 +43,7 @@
     
     <test name="HoverTests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.HoversTest"/>
         </classes>

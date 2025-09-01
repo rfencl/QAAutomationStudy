@@ -23,10 +23,10 @@ public class LoginTest {
     private static ThreadLocal<WebDriver> driverThreadLocal = new ThreadLocal<>();
     private static ThreadLocal<WebDriverWait> waitThreadLocal = new ThreadLocal<>();
 
-    @Parameters("browser")
+    @Parameters({"browser", "headless"})
     @BeforeClass
-    public void setupClass(@Optional("chrome") String browser) {
-        WebDriver driver = createDriver(browser);
+    public void setupClass(@Optional("chrome") String browser, @Optional("false") String headless) {
+        WebDriver driver = createDriver(browser, Boolean.parseBoolean(headless));
         
         // Configure driver
         driver.manage().window().maximize();
@@ -38,7 +38,7 @@ public class LoginTest {
         waitThreadLocal.set(new WebDriverWait(driver, Duration.ofSeconds(20)));
     }
     
-    private WebDriver createDriver(String browser) {
+    private WebDriver createDriver(String browser, boolean headless) {
         switch (browser.toLowerCase()) {
             case "chrome":
                 Map<String, Object> prefs = new HashMap<>();
@@ -49,11 +49,17 @@ public class LoginTest {
                 chromeOptions.addArguments("--disable-dev-shm-usage");
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--window-size=1920,1080");
+                if (headless) {
+                    chromeOptions.addArguments("--headless");
+                }
                 chromeOptions.setExperimentalOption("prefs", prefs);
                 return new ChromeDriver(chromeOptions);
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
+                if (headless) {
+                    firefoxOptions.addArguments("--headless");
+                }
                 return new FirefoxDriver(firefoxOptions);
             default:
                 throw new IllegalArgumentException("Browser not supported: " + browser);

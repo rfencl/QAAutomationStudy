@@ -17,22 +17,25 @@ public class CheckboxesTest {
     private static ThreadLocal<WebDriver> driverThreadLocal = new ThreadLocal<>();
     private static ThreadLocal<WebDriverWait> waitThreadLocal = new ThreadLocal<>();
 
-    @Parameters("browser")
+    @Parameters({"browser", "headless"})
     @BeforeClass
-    public void setupClass(@Optional("chrome") String browser) {
-        WebDriver driver = createDriver(browser);
+    public void setupClass(@Optional("chrome") String browser, @Optional("false") String headless) {
+        WebDriver driver = createDriver(browser, Boolean.parseBoolean(headless));
         driver.manage().window().maximize();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driverThreadLocal.set(driver);
         waitThreadLocal.set(new WebDriverWait(driver, Duration.ofSeconds(20)));
     }
     
-    private WebDriver createDriver(String browser) {
+    private WebDriver createDriver(String browser, boolean headless) {
         Map<String, Object> prefs = new HashMap<>();
         prefs.put("profile.password_manager_leak_detection", false);
         WebDriverManager.chromedriver().setup();
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--no-sandbox", "--disable-dev-shm-usage", "--disable-gpu");
+        if (headless) {
+            chromeOptions.addArguments("--headless");
+        }
         chromeOptions.setExperimentalOption("prefs", prefs);
         return new ChromeDriver(chromeOptions);
     }
