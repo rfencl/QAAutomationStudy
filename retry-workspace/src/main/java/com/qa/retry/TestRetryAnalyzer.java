@@ -4,12 +4,8 @@ import org.testng.IRetryAnalyzer;
 import org.testng.ITestResult;
 
 public class TestRetryAnalyzer implements IRetryAnalyzer {
-    private static final ThreadLocal<Integer> retryCount = new ThreadLocal<Integer>() {
-        @Override
-        protected Integer initialValue() {
-            return 0;
-        }
-    };
+    private static final ThreadLocal<java.util.Map<String, Integer>> retryCountMap = 
+        ThreadLocal.withInitial(() -> new java.util.HashMap<>());
     
     private final RetryConfig config;
     
@@ -23,12 +19,13 @@ public class TestRetryAnalyzer implements IRetryAnalyzer {
     
     @Override
     public boolean retry(ITestResult result) {
-        int currentRetryCount = retryCount.get();
+        String testKey = getTestKey(result);
+        int currentRetryCount = retryCountMap.get().getOrDefault(testKey, 0);
         
         if (currentRetryCount < config.getMaxRetries()) {
             if (isRetryableException(result.getThrowable())) {
                 currentRetryCount++;
-                retryCount.set(currentRetryCount);
+                retryCountMap.get().put(testKey, currentRetryCount);
                 
                 logRetryAttempt(result, currentRetryCount);
                 addDelay(currentRetryCount);
@@ -37,9 +34,12 @@ public class TestRetryAnalyzer implements IRetryAnalyzer {
             }
         }
         
-        // Reset retry count for next test
-        retryCount.remove();
         return false;
+    }
+    
+    private String getTestKey(ITestResult result) {
+        String methodName = result.getMethod() != null ? result.getMethod().getMethodName() : "unknown";
+        return methodName + "_" + System.identityHashCode(this);
     }
     
     private boolean isRetryableException(Throwable throwable) {

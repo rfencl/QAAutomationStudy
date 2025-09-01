@@ -36,8 +36,11 @@ public class RetryAnalyzerTest {
         
         TestRetryAnalyzer analyzer = new TestRetryAnalyzer(config);
         ITestResult mockResult = Mockito.mock(ITestResult.class);
+        ITestNGMethod mockMethod = Mockito.mock(ITestNGMethod.class);
         
         Mockito.when(mockResult.getThrowable()).thenReturn(new AssertionError("Assertion failed"));
+        Mockito.when(mockResult.getMethod()).thenReturn(mockMethod);
+        Mockito.when(mockMethod.getMethodName()).thenReturn("testMethod");
         
         // Should not retry on non-retryable exception
         boolean shouldRetry = analyzer.retry(mockResult);
