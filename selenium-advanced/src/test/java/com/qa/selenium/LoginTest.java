@@ -18,13 +18,27 @@ import java.util.Map;
 
 public class LoginTest {
     private LoginPage loginPage;
-    private WebDriver driver;
-    private WebDriverWait wait;
+    
+    // ThreadLocal for parallel execution
+    private static ThreadLocal<WebDriver> driverThreadLocal = new ThreadLocal<>();
+    private static ThreadLocal<WebDriverWait> waitThreadLocal = new ThreadLocal<>();
 
     @Parameters("browser")
     @BeforeClass
     public void setupClass(@Optional("chrome") String browser) {
-        // Setup WebDriver based on browser parameter
+        WebDriver driver = createDriver(browser);
+        
+        // Configure driver
+        driver.manage().window().maximize();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
+        
+        // Set ThreadLocal instances
+        driverThreadLocal.set(driver);
+        waitThreadLocal.set(new WebDriverWait(driver, Duration.ofSeconds(20)));
+    }
+    
+    private WebDriver createDriver(String browser) {
         switch (browser.toLowerCase()) {
             case "chrome":
                 Map<String, Object> prefs = new HashMap<>();
@@ -36,28 +50,29 @@ public class LoginTest {
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--window-size=1920,1080");
                 chromeOptions.setExperimentalOption("prefs", prefs);
-                driver = new ChromeDriver(chromeOptions);
-                break;
+                return new ChromeDriver(chromeOptions);
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
                 FirefoxOptions firefoxOptions = new FirefoxOptions();
-                driver = new FirefoxDriver(firefoxOptions);
-                break;
+                return new FirefoxDriver(firefoxOptions);
             default:
                 throw new IllegalArgumentException("Browser not supported: " + browser);
         }
-
-        // Configure driver
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(30));
-
-        // Create WebDriverWait
-        wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+    }
+    
+    private WebDriver getDriver() {
+        return driverThreadLocal.get();
+    }
+    
+    private WebDriverWait getWait() {
+        return waitThreadLocal.get();
     }
 
     @BeforeMethod
     public void setupMethod() {
+        WebDriver driver = getDriver();
+        WebDriverWait wait = getWait();
+        
         if (driver != null) {
             // Clear cookies before each test
             driver.manage().deleteAllCookies();
@@ -98,7 +113,7 @@ public class LoginTest {
 
         // Verify validation message or that login button is disabled
         Assert.assertTrue(loginPage.isLoginFailed() ||
-                driver.getCurrentUrl().contains("login"),
+                getDriver().getCurrentUrl().contains("login"),
                 "Should show validation error or stay on login page");
     }
 
@@ -108,7 +123,7 @@ public class LoginTest {
         loginPage.login(sqlInjection, sqlInjection);
 
         // Verify that SQL injection is prevented
-        Assert.assertTrue(driver.getCurrentUrl().contains("login"),
+        Assert.assertTrue(getDriver().getCurrentUrl().contains("login"),
                 "Should not allow SQL injection and stay on login page");
     }
 
@@ -119,7 +134,7 @@ public class LoginTest {
 
         // Verify handling of special characters
         Assert.assertTrue(loginPage.isLoginFailed() ||
-                driver.getCurrentUrl().contains("login"),
+                getDriver().getCurrentUrl().contains("login"),
                 "Should handle special characters gracefully");
     }
 
@@ -148,6 +163,7 @@ public class LoginTest {
 
     @AfterMethod
     public void teardownMethod() {
+        WebDriver driver = getDriver();
         // Clean up after each test method
         if (driver != null) {
             driver.manage().deleteAllCookies();
@@ -156,8 +172,11 @@ public class LoginTest {
 
     @AfterClass
     public void teardownClass() {
+        WebDriver driver = driverThreadLocal.get();
         if (driver != null) {
             driver.quit();
+            driverThreadLocal.remove();
+            waitThreadLocal.remove();
         }
     }
 }

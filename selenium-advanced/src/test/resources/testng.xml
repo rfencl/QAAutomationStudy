@@ -1,7 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="SeleniumTestSuite">
+<suite name="SeleniumTestSuite" parallel="tests" thread-count="3">
     
-    <test name="LoginTests">
+    <test name="ChromeTests1">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.selenium.LoginTest"/>
+        </classes>
+    </test>
+    
+    <test name="ChromeTests2">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.selenium.LoginTest"/>
+        </classes>
+    </test>
+    
+    <test name="ChromeTests3">
         <parameter name="browser" value="chrome"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
