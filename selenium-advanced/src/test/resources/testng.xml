@@ -1,24 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="SeleniumTestSuite" parallel="tests" thread-count="3">
+<suite name="TheInternetTestSuite" parallel="tests" thread-count="6">
     
-    <test name="ChromeTests1">
+    <test name="LoginTests">
         <parameter name="browser" value="chrome"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
         </classes>
     </test>
     
-    <test name="ChromeTests2">
+    <test name="CheckboxTests">
         <parameter name="browser" value="chrome"/>
         <classes>
-            <class name="com.qa.selenium.LoginTest"/>
+            <class name="com.qa.selenium.CheckboxesTest"/>
         </classes>
     </test>
     
-    <test name="ChromeTests3">
+    <test name="DropdownTests">
         <parameter name="browser" value="chrome"/>
         <classes>
-            <class name="com.qa.selenium.LoginTest"/>
+            <class name="com.qa.selenium.DropdownTest"/>
+        </classes>
+    </test>
+    
+    <test name="AlertTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.selenium.JavaScriptAlertsTest"/>
+        </classes>
+    </test>
+    
+    <test name="DynamicLoadingTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.selenium.DynamicLoadingTest"/>
+        </classes>
+    </test>
+    
+    <test name="HoverTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.selenium.HoversTest"/>
         </classes>
     </test>
     
