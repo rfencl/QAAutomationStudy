@@ -1,10 +1,10 @@
 # Selenium Advanced QA Automation Project
 
-A comprehensive Selenium WebDriver automation project demonstrating Page Object Model (POM) design pattern, TestNG framework integration, and best practices for web application testing.
+A comprehensive Selenium WebDriver automation project demonstrating Page Object Model (POM) design pattern, TestNG framework integration, and best practices for web application testing across multiple pages.
 
 ## 🎯 Project Overview
 
-This project automates login functionality testing for [The Internet](https://the-internet.herokuapp.com/login) - a popular testing practice website. It demonstrates modern Selenium automation practices suitable for beginners learning test automation.
+This project automates testing for multiple pages of [The Internet](https://the-internet.herokuapp.com/) - a popular testing practice website. It demonstrates modern Selenium automation practices covering various web elements and interactions suitable for beginners learning test automation.
 
 ## 📁 Project Structure
 
@@ -13,10 +13,20 @@ selenium-advanced/
 ├── src/
 │   ├── main/java/com/qa/selenium/
 │   │   └── pages/
-│   │       └── LoginPage.java          # Page Object Model class
+│   │       ├── LoginPage.java          # Login page automation
+│   │       ├── CheckboxesPage.java     # Checkbox interactions
+│   │       ├── DropdownPage.java       # Dropdown selections
+│   │       ├── DragAndDropPage.java    # Drag & drop actions
+│   │       ├── FileUploadPage.java     # File upload functionality
+│   │       ├── JavaScriptAlertsPage.java # Alert handling
+│   │       └── DynamicLoadingPage.java # Dynamic content loading
 │   └── test/
 │       ├── java/com/qa/selenium/
-│       │   └── LoginTest.java          # Test class
+│       │   ├── LoginTest.java          # Login functionality tests
+│       │   ├── CheckboxesTest.java     # Checkbox interaction tests
+│       │   ├── DropdownTest.java       # Dropdown selection tests
+│       │   ├── JavaScriptAlertsTest.java # Alert handling tests
+│       │   └── DynamicLoadingTest.java # Dynamic loading tests
 │       └── resources/
 │           └── testng.xml              # TestNG configuration
 ├── pom.xml                             # Maven dependencies
@@ -26,13 +36,23 @@ selenium-advanced/
 ## 🏗️ Architecture & Design Patterns
 
 ### Page Object Model (POM)
-- **LoginPage.java**: Encapsulates all login page elements and actions
+- **LoginPage.java**: Login form automation with credential validation
+- **CheckboxesPage.java**: Checkbox selection and state verification
+- **DropdownPage.java**: Dropdown selection by value and text
+- **DragAndDropPage.java**: Drag and drop interactions using Actions class
+- **FileUploadPage.java**: File upload functionality testing
+- **JavaScriptAlertsPage.java**: Alert, confirm, and prompt handling
+- **DynamicLoadingPage.java**: Dynamic content loading with explicit waits
 - **Benefits**: Maintainable, reusable, reduces code duplication
 - **Elements**: Defined using `@FindBy` annotations
-- **Methods**: Return `LoginPage` for method chaining (Fluent Interface)
+- **Methods**: Return page instances for method chaining (Fluent Interface)
 
 ### Test Structure
-- **LoginTest.java**: Contains all test scenarios with parallel execution support
+- **LoginTest.java**: Login functionality with valid/invalid credentials
+- **CheckboxesTest.java**: Checkbox state management and verification
+- **DropdownTest.java**: Dropdown selection validation
+- **JavaScriptAlertsTest.java**: Alert handling (accept, dismiss, text input)
+- **DynamicLoadingTest.java**: Dynamic content loading with waits
 - **Setup**: ThreadLocal WebDriver initialization for parallel execution
 - **Teardown**: Proper resource cleanup with ThreadLocal management
 - **Assertions**: TestNG assertions for validation
@@ -49,7 +69,45 @@ selenium-advanced/
 | Maven | 3.x | Build tool & dependency management |
 | Allure | 2.24.0 | Test reporting |
 
-## 📋 Classes & Methods Documentation
+## 📋 Test Coverage & Page Documentation
+
+### Automated Test Scenarios
+
+#### Login Functionality (LoginPage.java)
+- ✅ Valid login with correct credentials
+- ✅ Invalid login with wrong credentials
+- ✅ Empty field validation
+- ✅ SQL injection prevention
+- ✅ Special character handling
+- ✅ Page element validation
+- ✅ Field clearing functionality
+
+#### Checkbox Interactions (CheckboxesPage.java)
+- ✅ Checkbox count verification
+- ✅ Check/uncheck individual checkboxes
+- ✅ Checkbox state validation
+
+#### Dropdown Selections (DropdownPage.java)
+- ✅ Select by value
+- ✅ Select by visible text
+- ✅ Selected option verification
+
+#### JavaScript Alerts (JavaScriptAlertsPage.java)
+- ✅ Simple alert handling
+- ✅ Confirmation dialog (accept/dismiss)
+- ✅ Prompt dialog with text input
+- ✅ Alert text verification
+
+#### Dynamic Content Loading (DynamicLoadingPage.java)
+- ✅ Hidden element visibility (Example 1)
+- ✅ Element creation after loading (Example 2)
+- ✅ Loading indicator handling
+- ✅ Explicit wait implementation
+
+#### Mouse Interactions (HoversPage.java)
+- ✅ Hover effects on elements
+- ✅ Caption display on hover
+- ✅ Mouse movement actions
 
 ### LoginPage.java
 
@@ -148,9 +206,12 @@ mvn test -Dbrowser=firefox
 mvn test -DthreadCount=2
 ```
 
-### Test Credentials
+### Test Data & Credentials
 - **Valid Login**: `tomsmith` / `SuperSecretPassword!`
 - **Invalid Login**: Any other combination
+- **Dropdown Options**: Option 1, Option 2
+- **Alert Messages**: "I am a JS Alert", "I am a JS Confirm", "I am a JS prompt"
+- **Dynamic Loading**: "Hello World!" message after loading
 
 ## 🎓 Learning Points for Selenium Beginners
 
@@ -261,28 +322,43 @@ private WebDriver getDriver() {
 **Decision**: Configure parallel execution at test level
 **Reason**: Allows multiple browser instances to run simultaneously, reducing execution time
 
-## 🧪 Test Scenarios Covered
+## 🧪 Comprehensive Test Scenarios
 
-### Functional Testing
-- ✅ Valid login flow
-- ✅ Invalid credentials handling
-- ✅ Empty field validation
-- ✅ UI element verification
+### Form Interactions
+- ✅ Login form validation (valid/invalid credentials)
+- ✅ Checkbox state management
+- ✅ Dropdown selection by value and text
+- ✅ File upload functionality
 
-### Security Testing
+### JavaScript Interactions
+- ✅ Alert handling (simple alerts)
+- ✅ Confirmation dialogs (accept/dismiss)
+- ✅ Prompt dialogs with text input
+- ✅ Alert text verification
+
+### Dynamic Content
+- ✅ Element visibility after loading
+- ✅ Element creation after AJAX calls
+- ✅ Loading indicator handling
+- ✅ Explicit wait strategies
+
+### User Interface Actions
+- ✅ Drag and drop interactions
+- ✅ Mouse hover effects
+- ✅ Element state verification
+
+### Security & Validation
 - ✅ SQL injection prevention
 - ✅ Special character handling
-
-### Usability Testing
-- ✅ Field clearing functionality
-- ✅ Page title verification
-- ✅ Error message clarity
+- ✅ Input validation testing
+- ✅ Error message verification
 
 ## 📊 Running Tests & Reports
 
 ### Parallel Execution
 The project is configured to run tests in parallel using multiple browser instances:
-- **Thread Count**: 3 concurrent threads
+- **Thread Count**: 6 (covering all test classes)
+- **Test Classes**: LoginTest, CheckboxesTest, DropdownTest, JavaScriptAlertsTest, DynamicLoadingTest, HoversTest concurrent threads
 - **Execution Level**: Test-level parallelism
 - **Browser Instances**: Multiple Chrome instances running simultaneously
 - **Thread Safety**: ThreadLocal WebDriver pattern ensures isolation
@@ -310,8 +386,8 @@ mvn allure:serve
 
 ### Test Output (Parallel Execution)
 ```
-Tests run: 21, Failures: 0, Errors: 0, Skipped: 0
-Time elapsed: 129.0 s (3 parallel instances)
+Tests run: 20+, Failures: 0, Errors: 0, Skipped: 0
+Time elapsed: ~80.0 s (6 parallel instances)
 BUILD SUCCESS
 ```
 
@@ -340,18 +416,19 @@ BUILD SUCCESS
 ## 🔮 Next Steps for Learning
 
 ### Intermediate Topics
-1. **Data-Driven Testing**: Excel/CSV test data
-2. **Cross-Browser Testing**: Selenium Grid
-3. **Parallel Execution Optimization**: Advanced TestNG configurations
-4. **API Testing Integration**: REST Assured
-5. **CI/CD Integration**: Jenkins, GitHub Actions
+1. **Data-Driven Testing**: Excel/CSV test data for multiple test scenarios
+2. **Cross-Browser Testing**: Firefox, Edge, Safari automation
+3. **Advanced Interactions**: Keyboard shortcuts, complex mouse actions
+4. **API Testing Integration**: REST Assured for backend validation
+5. **CI/CD Integration**: Jenkins, GitHub Actions pipeline setup
 
 ### Advanced Topics
-1. **Docker Integration**: Containerized testing
-2. **Cloud Testing**: BrowserStack, Sauce Labs
-3. **Performance Testing**: JMeter integration
-4. **Visual Testing**: Applitools, Percy
-5. **Distributed Testing**: Selenium Grid with Docker
+1. **Docker Integration**: Containerized testing with Selenium Grid
+2. **Cloud Testing**: BrowserStack, Sauce Labs integration
+3. **Performance Testing**: JMeter integration for load testing
+4. **Visual Testing**: Applitools, Percy for UI regression
+5. **Mobile Testing**: Appium integration for mobile automation
+6. **Database Testing**: JDBC integration for data validation
 
 ## ⚡ Parallel Execution Benefits
 
@@ -433,6 +510,55 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
+## 🎯 Learning Path Recommendations
+
+### Beginner Level (Current Project)
+1. **Form Automation**: Login, checkboxes, dropdowns
+2. **Alert Handling**: JavaScript alerts, confirms, prompts
+3. **Dynamic Content**: Explicit waits, loading states
+4. **Mouse Interactions**: Hover effects, Actions class
+5. **Basic Interactions**: Click, type, select operations
+
+### Next Steps
+1. **File Operations**: Upload/download testing (FileUploadPage implemented)
+2. **Advanced Actions**: Drag & drop (DragAndDropPage implemented), complex gestures
+3. **Frame Handling**: iFrames and nested frames
+4. **Window Management**: Multiple windows/tabs
+5. **Table Operations**: Dynamic table interactions
+6. **Context Menus**: Right-click interactions
+7. **Key Press Events**: Keyboard shortcuts and combinations
+
+### Advanced Scenarios
+1. **Authentication**: Basic Auth, OAuth flows
+2. **Network Conditions**: Slow connections, offline testing
+3. **Responsive Testing**: Mobile viewport testing
+4. **Accessibility Testing**: ARIA attributes, screen readers
+
+## 📊 Project Statistics
+
+- **Total Pages Automated**: 7 (Login, Checkboxes, Dropdown, Alerts, Dynamic Loading, Hovers, Drag & Drop, File Upload)
+- **Test Classes**: 6 with parallel execution
+- **Test Methods**: 20+ covering various interaction patterns
+- **Execution Time**: ~80 seconds with 6 parallel threads
+- **Coverage Areas**: Forms, JavaScript interactions, dynamic content, mouse actions, file operations
+
+## 🚀 Quick Start Commands
+
+```bash
+# Run all tests in parallel
+mvn clean test
+
+# Run specific test class
+mvn test -Dtest=LoginTest
+
+# Run with custom thread count
+mvn test -DthreadCount=3
+
+# Generate Allure reports
+mvn allure:report
+mvn allure:serve
+```
+
 **Happy Testing! 🎉**
 
-*This project serves as a foundation for learning Selenium WebDriver automation with parallel execution capabilities. Start here and gradually explore more advanced topics as you build confidence with test automation and performance optimization.*
+*This comprehensive project demonstrates essential Selenium WebDriver automation patterns across multiple page types from the-internet.herokuapp.com. Each test class showcases different interaction patterns, wait strategies, and best practices, providing a solid foundation for web automation testing that can be extended to real-world applications.*
