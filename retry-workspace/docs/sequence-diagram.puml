@@ -1,0 +1,114 @@
+@startuml RetryMechanism-SequenceDiagram
+
+participant "TestNG Runner" as TestNG
+participant "RetryTestExample" as Test
+participant "TestRetryAnalyzer" as Analyzer
+participant "RetryConfig" as Config
+participant "RetryListener" as Listener
+participant "WebDriver" as Driver
+
+== Test Execution with Retry ==
+
+TestNG -> Test : execute testNetworkTimeout()
+activate Test
+
+Test -> Driver : get("https://www.google.com")
+Test -> Test : networkTimeoutTestCounter++
+Test -> Test : throw TimeoutException("Simulated network timeout")
+deactivate Test
+
+TestNG -> Analyzer : retry(ITestResult)
+activate Analyzer
+
+Analyzer -> Analyzer : getTestKey(result)
+Analyzer -> Config : getMaxRetries()
+Config --> Analyzer : 3
+Analyzer -> Analyzer : retryCountMap.get().getOrDefault(testKey, 0)
+note right : currentRetryCount = 0
+
+Analyzer -> Analyzer : isRetryableException(TimeoutException)
+Analyzer -> Config : getRetryableExceptions()
+Config --> Analyzer : Set{WebDriverException, NoSuchElementException, TimeoutException}
+Analyzer -> Analyzer : TimeoutException.isAssignableFrom() = true
+
+Analyzer -> Analyzer : currentRetryCount++ (now 1)
+Analyzer -> Analyzer : retryCountMap.put(testKey, 1)
+Analyzer -> Analyzer : logRetryAttempt(result, 1)
+note right : "[RETRY] Attempt 1/3 for test 'testNetworkTimeout'"
+
+Analyzer -> Analyzer : addDelay(1)
+Analyzer -> Config : getDelayMs()
+Config --> Analyzer : 1000ms
+Analyzer -> Config : isExponentialBackoff()
+Config --> Analyzer : true
+note right : delay = 1000 * 2^(1-1) = 1000ms
+Analyzer -> Analyzer : Thread.sleep(1000)
+
+Analyzer --> TestNG : true (retry)
+deactivate Analyzer
+
+TestNG -> Listener : onTestFailure(result)
+activate Listener
+Listener -> Listener : captureScreenshot("testNetworkTimeout")
+deactivate Listener
+
+== Second Attempt ==
+
+TestNG -> Test : execute testNetworkTimeout() [retry]
+activate Test
+Test -> Test : networkTimeoutTestCounter++ (now 2)
+Test -> Test : throw TimeoutException("Simulated network timeout")
+deactivate Test
+
+TestNG -> Analyzer : retry(ITestResult)
+activate Analyzer
+Analyzer -> Analyzer : currentRetryCount = 1, maxRetries = 3
+Analyzer -> Analyzer : 1 < 3 = true
+Analyzer -> Analyzer : isRetryableException(TimeoutException) = true
+Analyzer -> Analyzer : currentRetryCount++ (now 2)
+Analyzer -> Analyzer : logRetryAttempt(result, 2)
+Analyzer -> Analyzer : addDelay(2) [2000ms exponential backoff]
+Analyzer --> TestNG : true (retry)
+deactivate Analyzer
+
+== Third Attempt (Success) ==
+
+TestNG -> Test : execute testNetworkTimeout() [retry]
+activate Test
+Test -> Test : networkTimeoutTestCounter++ (now 3)
+Test -> Test : networkTimeoutTestCounter > 2, skip exception
+Test -> Driver : get("https://www.google.com")
+Test -> Driver : getTitle()
+Driver --> Test : "Google"
+Test -> Test : Assert.assertTrue(title.contains("Google"))
+deactivate Test
+
+TestNG -> Listener : onTestSuccess(result)
+activate Listener
+Listener -> Listener : logRetrySuccess("testNetworkTimeout", 3)
+note right : "[RETRY SUCCESS] Test 'testNetworkTimeout' passed after 3 attempts"
+deactivate Listener
+
+== Non-Retryable Exception Example ==
+
+TestNG -> Test : execute testAssertionFailure()
+activate Test
+Test -> Test : Assert.assertEquals("Wrong Title", "Google")
+Test -> Test : throw AssertionError("assertion failed")
+deactivate Test
+
+TestNG -> Analyzer : retry(ITestResult)
+activate Analyzer
+Analyzer -> Analyzer : isRetryableException(AssertionError)
+Analyzer -> Config : getRetryableExceptions()
+Config --> Analyzer : Set{WebDriverException, NoSuchElementException, TimeoutException}
+Analyzer -> Analyzer : AssertionError not in retryable exceptions
+Analyzer --> TestNG : false (no retry)
+deactivate Analyzer
+
+TestNG -> Listener : onTestFailure(result)
+activate Listener
+Listener -> Listener : captureScreenshot("testAssertionFailure")
+deactivate Listener
+
+@enduml

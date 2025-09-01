@@ -1,0 +1,94 @@
+@startuml RetryMechanism-ClassDiagram
+
+package "TestNG Framework" {
+    interface IRetryAnalyzer {
+        +retry(ITestResult result) : boolean
+    }
+    
+    interface ITestResult {
+        +getThrowable() : Throwable
+        +getMethod() : ITestNGMethod
+    }
+    
+    interface ITestNGMethod {
+        +getMethodName() : String
+    }
+    
+    interface ITestListener {
+        +onTestFailure(ITestResult result)
+        +onTestSuccess(ITestResult result)
+    }
+}
+
+package "Selenium WebDriver" {
+    class WebDriverException
+    class NoSuchElementException
+    class TimeoutException
+}
+
+package "Retry Mechanism" {
+    class TestRetryAnalyzer {
+        -retryCountMap : ThreadLocal<Map<String, Integer>>
+        -config : RetryConfig
+        +TestRetryAnalyzer()
+        +TestRetryAnalyzer(RetryConfig config)
+        +retry(ITestResult result) : boolean
+        -isRetryableException(Throwable throwable) : boolean
+        -logRetryAttempt(ITestResult result, int attemptNumber)
+        -addDelay(int attemptNumber)
+        -getTestKey(ITestResult result) : String
+    }
+    
+    class RetryConfig {
+        -maxRetries : int = 3
+        -delayMs : long = 1000
+        -exponentialBackoff : boolean = true
+        -retryableExceptions : Set<Class<? extends Throwable>>
+        +getMaxRetries() : int
+        +setMaxRetries(int maxRetries)
+        +getDelayMs() : long
+        +setDelayMs(long delayMs)
+        +isExponentialBackoff() : boolean
+        +setExponentialBackoff(boolean exponentialBackoff)
+        +getRetryableExceptions() : Set<Class<? extends Throwable>>
+        +setRetryableExceptions(Set<Class<? extends Throwable>> retryableExceptions)
+    }
+    
+    class RetryListener {
+        +onTestFailure(ITestResult result)
+        +onTestSuccess(ITestResult result)
+        -captureScreenshot(String testName)
+        -logRetrySuccess(String testName, int attempts)
+    }
+}
+
+package "Test Classes" {
+    class RetryTestExample {
+        -driver : WebDriver
+        -networkTimeoutTestCounter : int
+        -elementNotFoundTestCounter : int
+        +setUp()
+        +tearDown()
+        +testNetworkTimeout()
+        +testElementNotFound()
+        +testAssertionFailure()
+        +testSuccessfulTest()
+    }
+    
+    class RetryAnalyzerTest {
+        +testRetryableException()
+        +testNonRetryableException()
+        +testMaxRetriesExceeded()
+    }
+}
+
+TestRetryAnalyzer ..|> IRetryAnalyzer
+RetryListener ..|> ITestListener
+TestRetryAnalyzer *-- RetryConfig
+RetryTestExample ..> TestRetryAnalyzer : uses
+RetryAnalyzerTest ..> TestRetryAnalyzer : tests
+
+WebDriverException <|-- NoSuchElementException
+WebDriverException <|-- TimeoutException
+
+@enduml
