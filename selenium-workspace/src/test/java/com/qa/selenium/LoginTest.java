@@ -14,9 +14,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginTest {
-    private WebDriver driver;
-    private LoginPage loginPage;
-    private SeleniumHelper seleniumHelper;
+    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
+    private static ThreadLocal<LoginPage> loginPage = new ThreadLocal<>();
+    private static ThreadLocal<SeleniumHelper> seleniumHelper = new ThreadLocal<>();
+    
+    public static WebDriver getDriver() {
+        return driver.get();
+    }
+    
+    public static LoginPage getLoginPage() {
+        return loginPage.get();
+    }
     
     @Parameters("browser")
     @BeforeMethod
@@ -33,101 +41,101 @@ public class LoginTest {
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--window-size=1920,1080");
                 chromeOptions.setExperimentalOption("prefs", prefs);
-                driver = new ChromeDriver(chromeOptions);
+                driver.set(new ChromeDriver(chromeOptions));
                 break;
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
-                driver = new FirefoxDriver();
+                driver.set(new FirefoxDriver());
                 break;
             default:
                 throw new IllegalArgumentException("Browser not supported: " + browser);
         }
         
         // Configure driver
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.get().manage().window().maximize();
+        driver.get().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         
         // Initialize page objects and helpers
-        loginPage = new LoginPage(driver);
-        seleniumHelper = new SeleniumHelper(driver);
+        loginPage.set(new LoginPage(driver.get()));
+        seleniumHelper.set(new SeleniumHelper(driver.get()));
         
-        // Navigate to login page (replace with actual URL)
-        driver.get("https://the-internet.herokuapp.com/login");
+        // Navigate to login page
+        driver.get().get("https://the-internet.herokuapp.com/login");
     }
     
     @Test(priority = 1)
     public void testValidLogin() {
-        loginPage.login("tomsmith", "SuperSecretPassword!");
+        getLoginPage().login("tomsmith", "SuperSecretPassword!");
         
         // Verify successful login message
-        Assert.assertTrue(loginPage.isLoginSuccessful(), 
+        Assert.assertTrue(getLoginPage().isLoginSuccessful(), 
                          "Should show success message after valid login");
         
-        String successText = loginPage.getSuccessMessage();
+        String successText = getLoginPage().getSuccessMessage();
         Assert.assertTrue(successText.contains("You logged into a secure area!"), 
                          "Success message should contain 'You logged into a secure area!'");
     }
     
     @Test(priority = 2)
     public void testInvalidUsername() {
-        loginPage.login("invalid_user", "SuperSecretPassword!");
+        getLoginPage().login("invalid_user", "SuperSecretPassword!");
         
         // Verify error message is displayed
-        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), 
+        Assert.assertTrue(getLoginPage().isErrorMessageDisplayed(), 
                          "Error message should be displayed for invalid username");
         
-        String errorText = loginPage.getErrorMessage();
+        String errorText = getLoginPage().getErrorMessage();
         Assert.assertTrue(errorText.contains("Your username is invalid!"), 
                          "Error message should contain 'Your username is invalid!'");
     }
     
     @Test(priority = 3)
     public void testInvalidPassword() {
-        loginPage.login("tomsmith", "wrong_password");
+        getLoginPage().login("tomsmith", "wrong_password");
         
         // Verify error message is displayed
-        Assert.assertTrue(loginPage.isErrorMessageDisplayed(), 
+        Assert.assertTrue(getLoginPage().isErrorMessageDisplayed(), 
                          "Error message should be displayed for invalid password");
         
-        String errorText = loginPage.getErrorMessage();
+        String errorText = getLoginPage().getErrorMessage();
         Assert.assertTrue(errorText.contains("Your password is invalid!"), 
                          "Error message should contain 'Your password is invalid!'");
     }
     
     @Test(priority = 4)
     public void testEmptyCredentials() {
-        loginPage.login("", "");
+        getLoginPage().login("", "");
         
         // Verify validation message or that login button is disabled
-        Assert.assertTrue(loginPage.isErrorMessageDisplayed() || 
-                         driver.getCurrentUrl().contains("login"), 
+        Assert.assertTrue(getLoginPage().isErrorMessageDisplayed() || 
+                         getDriver().getCurrentUrl().contains("login"), 
                          "Should show validation error or stay on login page");
     }
     
     @Test(priority = 5)
     public void testSQLInjectionAttempt() {
         String sqlInjection = "' OR '1'='1";
-        loginPage.login(sqlInjection, sqlInjection);
+        getLoginPage().login(sqlInjection, sqlInjection);
         
         // Verify that SQL injection is prevented
-        Assert.assertTrue(driver.getCurrentUrl().contains("login"), 
+        Assert.assertTrue(getDriver().getCurrentUrl().contains("login"), 
                          "Should not allow SQL injection and stay on login page");
     }
     
     @Test(priority = 6)
     public void testSpecialCharacters() {
         String specialChars = "!@#$%^&*()";
-        loginPage.login(specialChars, specialChars);
+        getLoginPage().login(specialChars, specialChars);
         
         // Verify handling of special characters
-        Assert.assertTrue(loginPage.isErrorMessageDisplayed() || 
-                         driver.getCurrentUrl().contains("login"), 
+        Assert.assertTrue(getLoginPage().isErrorMessageDisplayed() || 
+                         getDriver().getCurrentUrl().contains("login"), 
                          "Should handle special characters gracefully");
     }
     
     @Test(priority = 7, groups = {"smoke"})
     public void testPageTitle() {
-        String title = loginPage.getPageTitle();
+        String title = getLoginPage().getPageTitle();
         Assert.assertTrue(title.contains("The Internet"), 
                          "Page title should indicate login page");
     }
@@ -135,10 +143,10 @@ public class LoginTest {
     @Test(priority = 8, groups = {"regression"})
     public void testFieldClearing() {
         // Enter some text
-        loginPage.login("test_user", "test_pass");
+        getLoginPage().login("test_user", "test_pass");
         
         // Clear fields
-        loginPage.clearFields();
+        getLoginPage().clearFields();
         
         // Verify fields are cleared (this would need actual field value checking)
         System.out.println("Fields cleared successfully");
@@ -146,8 +154,11 @@ public class LoginTest {
     
     @AfterMethod
     public void tearDown() {
-        if (driver != null) {
-            driver.quit();
+        if (getDriver() != null) {
+            getDriver().quit();
+            driver.remove();
+            loginPage.remove();
+            seleniumHelper.remove();
         }
     }
 }
