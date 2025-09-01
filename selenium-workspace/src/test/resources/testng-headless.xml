@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<suite name="TheInternetTestSuite" parallel="methods" thread-count="4">
-    <test name="ChromeTests">
+<suite name="TheInternetTestSuiteHeadless" parallel="methods" thread-count="4">
+    <test name="ChromeHeadlessTests">
         <parameter name="browser" value="chrome"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
             <class name="com.qa.selenium.CheckboxesTest"/>
@@ -11,9 +11,9 @@
         </classes>
     </test>
     
-    <test name="FirefoxTests">
+    <test name="FirefoxHeadlessTests">
         <parameter name="browser" value="firefox"/>
-        <parameter name="headless" value="false"/>
+        <parameter name="headless" value="true"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
             <class name="com.qa.selenium.CheckboxesTest"/>

@@ -1,0 +1,6 @@
+{
+    "type": "java",
+    "name": "Test with browser",
+    "request": "launch",
+    "vmArgs": ["-Dheadless=false"]
+}

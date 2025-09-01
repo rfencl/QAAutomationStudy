@@ -154,11 +154,17 @@ mvn clean install
 # Run all tests in parallel (default configuration)
 mvn test
 
+# Run tests in headless mode
+mvn test -DsuiteXmlFile=src/test/resources/testng-headless.xml
+
 # Run specific test
 mvn test -Dtest=LoginTest#testValidLogin
 
-# Run with TestNG XML configuration
-mvn test -DsuiteXmlFile=src/test/resources/testng.xml
+# Run specific test with headless mode
+mvn test -Dtest=LoginTest#testValidLogin -Dbrowser=chrome -Dheadless=true
+
+# Run with Firefox in headless mode
+mvn test -Dtest=LoginTest#testValidLogin -Dbrowser=firefox -Dheadless=true
 ```
 
 ### Test Credentials
@@ -297,13 +303,27 @@ public void tearDown() {
 - **Thread Count**: 4 concurrent threads
 - **Execution Mode**: Methods run in parallel
 - **Browser Support**: Chrome and Firefox simultaneously
+- **Headless Mode**: Configurable headless execution
 - **Thread Safety**: ThreadLocal ensures isolated WebDriver instances
 - **Test Classes**: 4 test classes with 18 total test methods
+- **Configuration Files**: testng.xml (normal) and testng-headless.xml (headless)
 
 ### Command Line Options
 ```bash
-# Run parallel tests (default)
+# Run parallel tests (default headless)
 mvn test
+
+# Run tests with browser visible
+mvn test -Dheadless=false
+
+# Run tests in headless mode (TestNG XML)
+mvn test -DsuiteXmlFile=src/test/resources/testng-headless.xml
+
+# Run specific test with headless mode
+mvn test -Dtest=LoginTest#testValidLogin -Dbrowser=chrome -Dheadless=true
+
+# Run all tests with system properties
+mvn test -Dbrowser=firefox -Dheadless=true
 
 # Run with specific thread count
 mvn test -DthreadCount=5
@@ -316,13 +336,76 @@ mvn test -Dgroups=regression
 mvn test -Dparallel=false
 ```
 
+### IDE Configuration
+
+#### VS Code
+**Method 1: Environment Variable (Easiest)**
+1. Open VS Code settings (Ctrl+,)
+2. Search for "java test config"
+3. Add to `settings.json`:
+```json
+{
+    "java.test.config": {
+        "env": {
+            "SHOW_BROWSER": "true"
+        }
+    }
+}
+```
+
+**Method 2: Launch Configuration**
+1. Create `.vscode/launch.json`:
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Test with Browser",
+            "request": "launch",
+            "vmArgs": ["-Dheadless=false"]
+        }
+    ]
+}
+```
+
+#### IntelliJ IDEA
+**Method 1: Default Run Configuration**
+1. Go to **Run** → **Edit Configurations...**
+2. Click **Templates** → **TestNG**
+3. In **VM options**: `-Dheadless=false`
+4. Click **Apply** (affects all future test runs)
+
+**Method 2: Per Test**
+1. Right-click test in explorer
+2. **Modify Run Configuration...**
+3. **VM options**: `-Dheadless=false`
+4. **Apply**
+
+**Method 3: Environment Variable**
+1. **Run** → **Edit Configurations...**
+2. **Environment variables** → **+**
+3. Name: `SHOW_BROWSER`, Value: `true`
+
+#### Eclipse
+1. Right-click test → **Run As** → **Run Configurations...**
+2. Select your test configuration
+3. Go to **Arguments** tab
+4. In **VM arguments** box, add: `-Dheadless=false`
+5. Click **Apply**
+
 ### Test Output (Parallel Execution)
 ```
 Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
-(18 tests × 2 browsers running in parallel)
+(18 tests × 2 browsers running in parallel, headless by default)
 BUILD SUCCESS
 Execution Time: ~60% faster than sequential
 ```
+
+### Browser Mode Configuration
+- **Default**: Tests run in headless mode for faster execution
+- **Show Browser**: Use `-Dheadless=false` or `SHOW_BROWSER=true` environment variable
+- **IDE Integration**: Configure VM options or environment variables as shown above
 
 ## 🚨 Common Issues & Solutions
 
@@ -346,6 +429,7 @@ Execution Time: ~60% faster than sequential
 3. **API Testing Integration**: REST Assured
 4. **CI/CD Integration**: Jenkins, GitHub Actions
 5. **Parallel Execution**: Multiple browser instances (✅ **Implemented**)
+6. **Headless Execution**: CI/CD friendly testing (✅ **Implemented**)
 
 ### Advanced Topics
 1. **Docker Integration**: Containerized testing
@@ -367,6 +451,13 @@ Execution Time: ~60% faster than sequential
 - **Resource Management**: Proper cleanup prevents memory leaks
 - **Test Independence**: No shared state between parallel tests
 - **Browser Isolation**: Each thread manages its own browser session
+
+### Headless Execution Benefits
+- **CI/CD Integration**: Runs without GUI in build pipelines
+- **Resource Efficiency**: Lower memory and CPU usage
+- **Faster Execution**: No GUI rendering overhead
+- **Server Compatibility**: Runs on headless servers
+- **Configurable**: Easy toggle between headless and normal modes
 
 ## 📚 Additional Resources
 

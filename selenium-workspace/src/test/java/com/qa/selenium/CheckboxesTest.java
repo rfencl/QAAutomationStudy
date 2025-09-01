@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.testng.Assert;
 import org.testng.annotations.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
@@ -24,10 +25,18 @@ public class CheckboxesTest {
         return checkboxesPage.get();
     }
     
-    @Parameters("browser")
+    @Parameters({"browser", "headless"})
     @BeforeMethod
-    public void setUp(@Optional("chrome") String browser) {
-        switch (browser.toLowerCase()) {
+    public void setUp(@Optional("chrome") String browser, @Optional("true") String headless) {
+        String browserToUse = System.getProperty("browser", browser);
+        String headlessToUse = System.getProperty("headless", headless);
+        // Quick toggle: set SHOW_BROWSER=true to see browser
+        if ("true".equals(System.getenv("SHOW_BROWSER"))) {
+            headlessToUse = "false";
+        }
+        boolean isHeadless = Boolean.parseBoolean(headlessToUse);
+        
+        switch (browserToUse.toLowerCase()) {
             case "chrome":
                 Map<String, Object> prefs = new HashMap<>();
                 prefs.put("profile.password_manager_leak_detection", false);
@@ -37,15 +46,22 @@ public class CheckboxesTest {
                 chromeOptions.addArguments("--disable-dev-shm-usage");
                 chromeOptions.addArguments("--disable-gpu");
                 chromeOptions.addArguments("--window-size=1920,1080");
+                if (isHeadless) {
+                    chromeOptions.addArguments("--headless");
+                }
                 chromeOptions.setExperimentalOption("prefs", prefs);
                 driver.set(new ChromeDriver(chromeOptions));
                 break;
             case "firefox":
                 WebDriverManager.firefoxdriver().setup();
-                driver.set(new FirefoxDriver());
+                FirefoxOptions firefoxOptions = new FirefoxOptions();
+                if (isHeadless) {
+                    firefoxOptions.addArguments("--headless");
+                }
+                driver.set(new FirefoxDriver(firefoxOptions));
                 break;
             default:
-                throw new IllegalArgumentException("Browser not supported: " + browser);
+                throw new IllegalArgumentException("Browser not supported: " + browserToUse);
         }
         
         getDriver().manage().window().maximize();

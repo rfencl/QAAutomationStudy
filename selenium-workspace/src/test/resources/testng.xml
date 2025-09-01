@@ -2,6 +2,7 @@
 <suite name="TheInternetTestSuite" parallel="methods" thread-count="4">
     <test name="ChromeTests">
         <parameter name="browser" value="chrome"/>
+        <parameter name="headless" value="false"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
             <class name="com.qa.selenium.CheckboxesTest"/>
@@ -12,6 +13,7 @@
     
     <test name="FirefoxTests">
         <parameter name="browser" value="firefox"/>
+        <parameter name="headless" value="false"/>
         <classes>
             <class name="com.qa.selenium.LoginTest"/>
             <class name="com.qa.selenium.CheckboxesTest"/>
