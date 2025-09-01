@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="RetryTestSuite" verbose="1">
+    <listeners>
+        <listener class-name="com.qa.retry.RetryListener"/>
+    </listeners>
+    
+    <test name="RetryMechanismTests">
+        <classes>
+            <class name="com.qa.retry.RetryTestExample"/>
+            <class name="com.qa.retry.RetryAnalyzerTest"/>
+        </classes>
+    </test>
+</suite>

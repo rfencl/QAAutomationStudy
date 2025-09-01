@@ -2,6 +2,32 @@
 
 This repository contains comprehensive workspaces for advanced QA automation learning, covering all the key areas mentioned in your study plan. Each workspace includes practical exercises, real-world examples, and hands-on implementations.
 
+### 10. Retry Workspace (`retry-workspace/`)
+**Focus**: Robust retry mechanism for handling flaky tests
+
+**Key Topics Covered**:
+- TestNG IRetryAnalyzer implementation
+- Configurable retry settings and exception handling
+- Thread-safe retry counting with ThreadLocal pattern
+- Exponential backoff delay strategies
+- Comprehensive logging and retry statistics
+- Integration with TestNG listeners for enhanced reporting
+
+**Exercises Implemented**:
+- ✅ **TestRetryAnalyzer** - Main retry logic with configurable settings
+- ✅ **RetryConfig** - Flexible configuration for retry behavior
+- ✅ **RetryListener** - TestNG listener for retry statistics and screenshots
+- ✅ **RetryTestExample** - Selenium tests demonstrating retry scenarios
+- ✅ **RetryAnalyzerTest** - Unit tests validating retry logic
+
+**Key Features**:
+- Conditional retry based on exception types (WebDriverException, TimeoutException, etc.)
+- Thread-safe parallel execution support
+- Exponential backoff with configurable delays
+- Detailed retry attempt logging
+- Integration with existing TestNG test suites
+- Screenshot capture on test failures
+
 ## 📁 Workspace Structure
 
 ### 1. Java Advanced (`java-advanced/`)
