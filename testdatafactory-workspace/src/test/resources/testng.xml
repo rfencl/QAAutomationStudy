@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="TestDataFactoryTestSuite" verbose="1">
+    <test name="TestDataFactoryTests">
+        <classes>
+            <class name="com.qa.testdata.TestDataFactoryTest"/>
+            <class name="com.qa.testdata.TestDataFactoryExampleTest"/>
+        </classes>
+    </test>
+</suite>

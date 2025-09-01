@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="CrossBrowserParallelSuite" parallel="tests" thread-count="6" verbose="1">
+    
+    <!-- Chrome Tests -->
+    <test name="Chrome-LoginTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelLoginTest"/>
+        </classes>
+    </test>
+    
+    <test name="Chrome-FormTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelFormTest"/>
+        </classes>
+    </test>
+    
+    <test name="Chrome-NavigationTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelNavigationTest"/>
+        </classes>
+    </test>
+    
+    <!-- Firefox Tests -->
+    <test name="Firefox-LoginTests">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelLoginTest"/>
+        </classes>
+    </test>
+    
+    <test name="Firefox-FormTests">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelFormTest"/>
+        </classes>
+    </test>
+    
+    <test name="Firefox-AlertTests">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelAlertTest"/>
+        </classes>
+    </test>
+    
+</suite>

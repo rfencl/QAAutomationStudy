@@ -2,6 +2,83 @@
 
 This repository contains comprehensive workspaces for advanced QA automation learning, covering all the key areas mentioned in your study plan. Each workspace includes practical exercises, real-world examples, and hands-on implementations.
 
+### 13. ParallelExecution Workspace (`parallelexecution-workspace/`)
+**Focus**: Thread-safe parallel test execution with TestNG and Selenium WebDriver
+
+**Key Topics Covered**:
+- ThreadLocal pattern for isolated WebDriver instances
+- Multiple parallel execution strategies (tests, methods, cross-browser)
+- Thread-safe test automation architecture
+- Performance optimization through concurrent execution
+- Resource management and cleanup in parallel environments
+- Cross-browser parallel testing capabilities
+
+**Exercises Implemented**:
+- ✅ **ThreadSafeDriverManager** - ThreadLocal WebDriver management for isolation
+- ✅ **ParallelTestBase** - Base class with thread-safe setup and teardown
+- ✅ **Multiple Test Classes** - Login, Form, Navigation, and Alert scenarios
+- ✅ **TestNG XML Configurations** - Various parallel execution strategies
+- ✅ **Performance Demonstration** - Execution time tracking and comparison
+
+**Key Features**:
+- ThreadLocal WebDriver instances per thread
+- Multiple parallel strategies (test-level, method-level, cross-browser)
+- Thread safety with no shared state between tests
+- Performance monitoring and execution time tracking
+- Scalable architecture supporting up to 8 concurrent threads
+- Proper resource cleanup and memory management
+
+### 12. WebDriverWrapper Workspace (`webdriverwrapper-workspace/`)
+**Focus**: Enhanced WebDriver utility with built-in waits and simplified API
+
+**Key Topics Covered**:
+- WebDriver wrapper implementation with intelligent waits
+- Simplified API for common Selenium operations
+- Error handling and exception management
+- Cross-browser support with factory pattern
+- Alert, frame, and window handling
+- JavaScript execution and scrolling utilities
+
+**Exercises Implemented**:
+- ✅ **WebDriverWrapper** - Main wrapper class with 50+ utility methods
+- ✅ **WebDriverFactory** - Factory for creating WebDriver instances and wrappers
+- ✅ **WebDriverWrapperTest** - Comprehensive unit tests for all functionality
+- ✅ **WebDriverWrapperExampleTest** - Real-world usage scenarios and workflows
+
+**Key Features**:
+- Built-in explicit waits for all operations
+- Simplified API reducing boilerplate code
+- Comprehensive alert and popup handling
+- Cross-browser support (Chrome, Firefox)
+- JavaScript execution capabilities
+- Element state verification methods
+
+### 11. TestDataFactory Workspace (`testdatafactory-workspace/`)
+**Focus**: Builder pattern implementation for creating complex test data objects
+
+**Key Topics Covered**:
+- Builder pattern for fluent API design
+- Test data factory with entity tracking
+- Random data generation with JavaFaker
+- Entity relationships and validation
+- Thread-safe data management
+- Automatic cleanup and resource management
+
+**Exercises Implemented**:
+- ✅ **TestDataFactory** - Main factory class for creating and managing test data
+- ✅ **UserBuilder & OrderBuilder** - Builder pattern implementations with fluent API
+- ✅ **Entity Classes** - User, Order, and OrderItem domain objects
+- ✅ **TestDataFactoryTest** - Comprehensive unit tests for all functionality
+- ✅ **TestDataFactoryExampleTest** - Real-world usage scenarios and workflows
+
+**Key Features**:
+- Fluent API for readable test data creation
+- Random data generation with realistic values
+- Entity relationship management (User -> Order)
+- Built-in validation for required fields
+- Automatic entity tracking for cleanup
+- Thread-safe concurrent operations
+
 ### 10. Retry Workspace (`retry-workspace/`)
 **Focus**: Robust retry mechanism for handling flaky tests
 
@@ -628,8 +705,8 @@ Feel free to extend these workspaces with:
 | **qa-concepts** | ✅ Complete | N/A | N/A | Theory, methodologies, best practices |
 
 ### Code Metrics
-- **Total Workspaces**: 9
-- **Maven Projects**: 6
+- **Total Workspaces**: 12
+- **Maven Projects**: 9
 - **Page Objects**: 13+ (across selenium workspaces)
 - **Test Classes**: 15+
 - **Test Methods**: 50+
@@ -687,7 +764,7 @@ All workspaces follow industry best practices and are production-ready:
 This comprehensive workspace collection provides everything needed for advanced QA automation learning and interview preparation. Each component is production-ready and follows industry best practices.
 
 ### 🎆 Achievement Summary
-- **9 Complete Workspaces** covering all aspects of QA automation
+- **12 Complete Workspaces** covering all aspects of QA automation
 - **50+ Test Methods** with comprehensive coverage
 - **Parallel Execution** with up to 6 concurrent threads
 - **Advanced Java Features** including functional programming
