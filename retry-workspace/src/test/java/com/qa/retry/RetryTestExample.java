@@ -62,11 +62,12 @@ public class RetryTestExample {
         Assert.assertTrue(searchBox.isDisplayed());
     }
     
-    @Test(retryAnalyzer = TestRetryAnalyzer.class)
+    @Test(retryAnalyzer = TestRetryAnalyzer.class, expectedExceptions = AssertionError.class)
     public void testAssertionFailure() {
         // This should NOT retry as AssertionError is not in retryable exceptions
         driver.get("https://www.google.com");
-        Assert.assertEquals(driver.getTitle(), "Wrong Title", "This assertion should fail and not retry");
+        // This assertion will fail and should NOT retry
+        Assert.assertEquals("Wrong Title", driver.getTitle(), "This assertion should fail and not retry");
     }
     
     @Test(retryAnalyzer = TestRetryAnalyzer.class)
