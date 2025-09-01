@@ -2,6 +2,33 @@
 
 This repository contains comprehensive workspaces for advanced QA automation learning, covering all the key areas mentioned in your study plan. Each workspace includes practical exercises, real-world examples, and hands-on implementations.
 
+### 15. DatabaseConnectionPool Workspace (`databaseconnectionpool-workspace/`)
+**Focus**: Thread-safe database connection pool implementation with advanced resource management
+
+**Key Topics Covered**:
+- Thread-safe connection pool design and implementation
+- Concurrent programming with BlockingQueue and AtomicInteger
+- Connection lifecycle management (creation, validation, expiration)
+- Background maintenance and automatic cleanup
+- Multiple named pools with singleton manager pattern
+- Performance monitoring and resource optimization
+
+**Exercises Implemented**:
+- ✅ **DatabaseConnectionPool** - Main thread-safe pool implementation
+- ✅ **PooledConnection** - Connection wrapper with metadata and lifecycle tracking
+- ✅ **ConnectionPoolManager** - Singleton manager for multiple named pools
+- ✅ **DatabaseConfig** - Flexible configuration for pool settings
+- ✅ **Comprehensive Testing** - Unit tests, performance tests, concurrent access tests
+- ✅ **PlantUML Diagrams** - Class and sequence diagrams for architecture documentation
+
+**Key Features**:
+- Thread-safe operations with concurrent collections and locks
+- Dynamic pool sizing with automatic expansion and contraction
+- Connection validation and health monitoring
+- Background maintenance thread for cleanup operations
+- Multiple database support with named pools
+- Performance metrics and usage statistics
+
 ### 14. TestResultAggregation Workspace (`testresultaggregation-workspace/`)
 **Focus**: Comprehensive test result analysis using Java 8+ streams and functional programming
 
@@ -731,8 +758,8 @@ Feel free to extend these workspaces with:
 | **qa-concepts** | ✅ Complete | N/A | N/A | Theory, methodologies, best practices |
 
 ### Code Metrics
-- **Total Workspaces**: 13
-- **Maven Projects**: 10
+- **Total Workspaces**: 14
+- **Maven Projects**: 11
 - **Page Objects**: 13+ (across selenium workspaces)
 - **Test Classes**: 15+
 - **Test Methods**: 50+
@@ -790,7 +817,7 @@ All workspaces follow industry best practices and are production-ready:
 This comprehensive workspace collection provides everything needed for advanced QA automation learning and interview preparation. Each component is production-ready and follows industry best practices.
 
 ### 🎆 Achievement Summary
-- **13 Complete Workspaces** covering all aspects of QA automation
+- **14 Complete Workspaces** covering all aspects of QA automation
 - **50+ Test Methods** with comprehensive coverage
 - **Parallel Execution** with up to 6 concurrent threads
 - **Advanced Java Features** including functional programming

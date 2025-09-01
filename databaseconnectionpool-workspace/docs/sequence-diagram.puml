@@ -1,0 +1,96 @@
+@startuml DatabaseConnectionPool_SequenceDiagram
+
+actor Client
+participant ConnectionPoolManager as CPM
+participant DatabaseConnectionPool as DCP
+participant PooledConnection as PC
+participant Connection as Conn
+database Database as DB
+
+== Pool Initialization ==
+Client -> CPM: createPool(poolName, config)
+CPM -> DCP: new DatabaseConnectionPool(config)
+DCP -> DCP: initializePool()
+loop minPoolSize times
+    DCP -> DB: DriverManager.getConnection()
+    DB --> DCP: Connection
+    DCP -> PC: new PooledConnection(connection)
+    DCP -> DCP: availableConnections.offer(pooledConn)
+end
+DCP -> DCP: startMaintenanceThread()
+CPM -> CPM: pools.put(poolName, pool)
+
+== Get Connection ==
+Client -> CPM: getConnection(poolName)
+CPM -> DCP: getConnection()
+DCP -> DCP: availableConnections.poll(timeout)
+alt connection available
+    DCP -> PC: setInUse(true)
+    DCP -> DCP: usedConnections.offer(pooledConn)
+    DCP -> PC: getConnection()
+    PC --> DCP: Connection
+    DCP --> CPM: Connection
+    CPM --> Client: Connection
+else no connection available and pool not full
+    DCP -> DB: DriverManager.getConnection()
+    DB --> DCP: Connection
+    DCP -> PC: new PooledConnection(connection)
+    DCP -> PC: setInUse(true)
+    DCP -> DCP: usedConnections.offer(pooledConn)
+    DCP -> PC: getConnection()
+    PC --> DCP: Connection
+    DCP --> CPM: Connection
+    CPM --> Client: Connection
+else pool exhausted
+    DCP --> CPM: SQLException("Pool exhausted")
+    CPM --> Client: SQLException
+end
+
+== Use Connection ==
+Client -> Conn: execute SQL operations
+Conn -> DB: SQL queries
+DB --> Conn: results
+Conn --> Client: results
+
+== Release Connection ==
+Client -> CPM: releaseConnection(poolName, connection)
+CPM -> DCP: releaseConnection(connection)
+DCP -> DCP: findPooledConnection(connection)
+DCP -> PC: setInUse(false)
+DCP -> DCP: usedConnections.remove(pooledConn)
+alt connection valid and not shutdown
+    DCP -> DCP: availableConnections.offer(pooledConn)
+else connection invalid or shutdown
+    DCP -> Conn: close()
+    DCP -> DCP: totalConnections.decrementAndGet()
+end
+
+== Maintenance (Background Thread) ==
+loop every 30 seconds
+    DCP -> DCP: performMaintenance()
+    DCP -> PC: isExpired() / isIdle() / isValid()
+    alt connection expired/idle/invalid
+        DCP -> Conn: close()
+        DCP -> DCP: remove from availableConnections
+    end
+    alt totalConnections < minPoolSize
+        DCP -> DB: DriverManager.getConnection()
+        DB --> DCP: Connection
+        DCP -> PC: new PooledConnection(connection)
+        DCP -> DCP: availableConnections.offer(pooledConn)
+    end
+end
+
+== Shutdown ==
+Client -> CPM: shutdownPool(poolName)
+CPM -> DCP: shutdown()
+DCP -> DCP: shutdown = true
+loop all available connections
+    DCP -> Conn: close()
+end
+loop all used connections
+    DCP -> Conn: close()
+end
+CPM -> CPM: pools.remove(poolName)
+
+@enduml

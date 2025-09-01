@@ -1,0 +1,79 @@
+@startuml DatabaseConnectionPool_ClassDiagram
+
+!define RECTANGLE class
+
+class DatabaseConfig {
+    -String url
+    -String username
+    -String password
+    -String driverClassName
+    -int minPoolSize
+    -int maxPoolSize
+    -int connectionTimeout
+    -int idleTimeout
+    -int maxLifetime
+    +DatabaseConfig(url, username, password, driverClassName)
+    +getters/setters()
+}
+
+class PooledConnection {
+    -Connection connection
+    -LocalDateTime createdAt
+    -LocalDateTime lastUsed
+    -boolean inUse
+    +PooledConnection(connection)
+    +getConnection(): Connection
+    +isExpired(maxLifetimeMs): boolean
+    +isIdle(idleTimeoutMs): boolean
+    +isValid(): boolean
+    +setInUse(inUse): void
+}
+
+class DatabaseConnectionPool {
+    -DatabaseConfig config
+    -BlockingQueue<PooledConnection> availableConnections
+    -BlockingQueue<PooledConnection> usedConnections
+    -AtomicInteger totalConnections
+    -ReentrantLock lock
+    -boolean shutdown
+    +DatabaseConnectionPool(config)
+    +getConnection(): Connection
+    +releaseConnection(connection): void
+    +shutdown(): void
+    -initializePool(): void
+    -createConnection(): PooledConnection
+    -performMaintenance(): void
+    -startMaintenanceThread(): void
+}
+
+class ConnectionPoolManager {
+    -static ConnectionPoolManager INSTANCE
+    -ConcurrentHashMap<String, DatabaseConnectionPool> pools
+    -ConnectionPoolManager()
+    +getInstance(): ConnectionPoolManager
+    +createPool(poolName, config): void
+    +getConnection(poolName): Connection
+    +releaseConnection(poolName, connection): void
+    +shutdownPool(poolName): void
+    +shutdownAllPools(): void
+    +getPool(poolName): DatabaseConnectionPool
+    +poolExists(poolName): boolean
+}
+
+interface Connection {
+    +isClosed(): boolean
+    +isValid(timeout): boolean
+    +close(): void
+}
+
+DatabaseConnectionPool *-- DatabaseConfig : uses
+DatabaseConnectionPool *-- PooledConnection : manages
+PooledConnection *-- Connection : wraps
+ConnectionPoolManager *-- DatabaseConnectionPool : manages
+ConnectionPoolManager ..> DatabaseConfig : uses
+
+note right of ConnectionPoolManager : Singleton Pattern
+note right of DatabaseConnectionPool : Thread-Safe Pool Implementation
+note right of PooledConnection : Connection Wrapper with Metadata
+
+@enduml

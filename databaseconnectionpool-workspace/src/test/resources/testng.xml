@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="DatabaseConnectionPoolSuite" verbose="1">
+    
+    <test name="ConnectionPoolTests">
+        <classes>
+            <class name="com.qa.db.DatabaseConnectionPoolTest"/>
+            <class name="com.qa.db.ConnectionPoolManagerTest"/>
+        </classes>
+    </test>
+    
+    <test name="PerformanceTests">
+        <classes>
+            <class name="com.qa.db.ConnectionPoolPerformanceTest"/>
+        </classes>
+    </test>
+    
+</suite>
