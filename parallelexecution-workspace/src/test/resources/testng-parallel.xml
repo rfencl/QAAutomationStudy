@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="ParallelExecutionSuite" parallel="tests" thread-count="4" verbose="1">
+    
+    <test name="ChromeLoginTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelLoginTest"/>
+        </classes>
+    </test>
+    
+    <test name="ChromeFormTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelFormTest"/>
+        </classes>
+    </test>
+    
+    <test name="ChromeNavigationTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelNavigationTest"/>
+        </classes>
+    </test>
+    
+    <test name="ChromeAlertTests">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelAlertTest"/>
+        </classes>
+    </test>
+    
+</suite>

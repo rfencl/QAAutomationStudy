@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="MethodLevelParallelSuite" parallel="methods" thread-count="8" verbose="1">
+    
+    <test name="AllTestsParallel">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="com.qa.parallel.ParallelLoginTest"/>
+            <class name="com.qa.parallel.ParallelFormTest"/>
+            <class name="com.qa.parallel.ParallelNavigationTest"/>
+            <class name="com.qa.parallel.ParallelAlertTest"/>
+        </classes>
+    </test>
+    
+</suite>
