@@ -143,7 +143,6 @@
 &lt;!DOCTYPE suite SYSTEM &quot;https://testng.org/testng-1.0.dtd&quot;&gt;
 &lt;suite name=&quot;DistributedTestSuite&quot; verbose=&quot;0&quot;&gt;
   &lt;test thread-count=&quot;5&quot; name=&quot;DistributedTest&quot; verbose=&quot;0&quot;&gt;
-    &lt;parameter name=&quot;browser&quot; value=&quot;chrome&quot;/&gt;
     &lt;classes&gt;
       &lt;class name=&quot;com.qa.tests.SampleLoginTest&quot;&gt;
         &lt;methods&gt;
@@ -193,7 +192,7 @@ data.addRows(1);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'testValidLogin')
 data.setCell(0, 2, 'com.qa.tests.SampleLoginTest')
-data.setCell(0, 3, 2002);
+data.setCell(0, 3, 2003);
 window.suiteTableData['DistributedTestSuite']= { tableData: data, tableDiv: 'times-div-DistributedTestSuite'}
 return data;
 }
@@ -219,9 +218,9 @@ return data;
             <div class="ignored-class-div">
               <span class="ignored-class-name">com.qa.tests.SampleLoginTest</span>
               <div class="ignored-methods-div">
-                <span class="ignored-method-name">testEmptyCredentials</span>
-                <br/>
                 <span class="ignored-method-name">testInvalidLogin</span>
+                <br/>
+                <span class="ignored-method-name">testEmptyCredentials</span>
                 <br/>
               </div> <!-- ignored-methods-div -->
             </div> <!-- ignored-class-div -->
