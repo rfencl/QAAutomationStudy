@@ -1,7 +1,15 @@
 package com.qa.automation.environment.service;
 
-import com.qa.automation.environment.model.EnvironmentTemplate;
 import com.qa.automation.environment.exception.TemplateNotFoundException;
+import com.qa.automation.environment.model.ComputeSpec;
+import java.util.List;
+import com.qa.automation.environment.model.ApplicationSpec;
+import com.qa.automation.environment.model.ContainerSpec;
+import com.qa.automation.environment.model.DatabaseSpec;
+import com.qa.automation.environment.model.DeploymentType;
+import com.qa.automation.environment.model.EnvironmentTemplate;
+import com.qa.automation.environment.model.InfrastructureSpec;
+import com.qa.automation.environment.model.NetworkSpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -133,6 +141,13 @@ public class TemplateManager {
         return InfrastructureSpec.builder()
             .cloudProvider("aws")
             .containerized(false)
+            .computeSpecs(List.of(
+                ComputeSpec.builder()
+                    .instanceType("t3.micro")
+                    .count(1)
+                    .imageId("ami-12345")
+                    .build()
+            ))
             .build();
     }
 

@@ -21,18 +21,4 @@ public class ApplicationInstance {
     private HealthStatus healthStatus;
 }
 
-enum ApplicationType {
-    CONTAINER, VM
-}
 
-enum ApplicationStatus {
-    DEPLOYING, RUNNING, FAILED, STOPPED
-}
-
-@Data
-@Builder
-class HealthStatus {
-    private boolean healthy;
-    private String lastCheck;
-    private String message;
-}

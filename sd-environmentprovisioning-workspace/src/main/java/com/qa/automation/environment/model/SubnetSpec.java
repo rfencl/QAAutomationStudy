@@ -5,8 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class VolumeMount {
+public class SubnetSpec {
     private String name;
-    private String mountPath;
-    private String hostPath;
+    private String cidr;
+    private String type;
+    private String availabilityZone;
 }

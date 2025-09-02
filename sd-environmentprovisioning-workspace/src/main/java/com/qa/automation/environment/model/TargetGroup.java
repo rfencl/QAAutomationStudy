@@ -5,8 +5,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class VolumeMount {
+public class TargetGroup {
     private String name;
-    private String mountPath;
-    private String hostPath;
+    private int port;
+    private String protocol;
+    private String healthCheckPath;
 }

@@ -15,22 +15,4 @@ public class InfrastructureResources {
     private ContainerCluster containerCluster;
 }
 
-@Data
-@Builder
-class ComputeInstance {
-    private String id;
-    private String instanceType;
-    private String publicIp;
-    private String privateIp;
-    private String status;
-}
 
-@Data
-@Builder
-class ContainerCluster {
-    private String id;
-    private String name;
-    private String endpoint;
-    private int nodeCount;
-    private String status;
-}

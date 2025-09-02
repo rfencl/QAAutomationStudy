@@ -21,12 +21,4 @@ public class DatabaseInstance {
     private ConnectionInfo connectionInfo;
 }
 
-@Data
-@Builder
-class ConnectionInfo {
-    private String host;
-    private int port;
-    private String username;
-    private String password;
-    private String connectionString;
-}
+

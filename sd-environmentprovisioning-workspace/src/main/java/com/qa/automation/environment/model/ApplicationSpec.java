@@ -5,9 +5,6 @@ import lombok.Data;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Application specification for deployment
- */
 @Data
 @Builder
 public class ApplicationSpec {
@@ -20,33 +17,4 @@ public class ApplicationSpec {
     private ResourceRequirements resourceRequirements;
     private Map<String, String> configuration;
     private HealthCheck healthCheck;
-}
-
-enum DeploymentType {
-    CONTAINER, VM
-}
-
-@Data
-@Builder
-class PortMapping {
-    private int containerPort;
-    private int servicePort;
-    private String protocol;
-}
-
-@Data
-@Builder
-class VolumeMount {
-    private String name;
-    private String mountPath;
-    private String hostPath;
-}
-
-@Data
-@Builder
-class HealthCheck {
-    private String path;
-    private int port;
-    private int initialDelaySeconds;
-    private int periodSeconds;
 }

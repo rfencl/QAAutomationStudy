@@ -6,7 +6,9 @@ import java.util.List;
 
 @Data
 @Builder
-public class DatabaseConfig {
+public class LoadBalancerSpec {
     private String name;
-    private List<UserConfig> users;
+    private String type;
+    private List<String> subnets;
+    private List<TargetGroup> targetGroups;
 }

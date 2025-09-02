@@ -5,6 +5,7 @@ import com.qa.automation.environment.manager.*;
 import com.qa.automation.environment.model.*;
 import com.qa.automation.environment.provider.CloudProvider;
 import com.qa.automation.environment.provider.DatabaseProvider;
+import com.qa.automation.environment.provider.DatabaseInstanceConfig;
 import com.qa.automation.environment.service.TemplateManager;
 import com.qa.automation.environment.service.TemplateValidator;
 import org.testng.annotations.AfterClass;

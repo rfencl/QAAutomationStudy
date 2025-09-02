@@ -2,11 +2,12 @@ package com.qa.automation.environment.model;
 
 import lombok.Builder;
 import lombok.Data;
+import java.util.List;
 
 @Data
 @Builder
-public class VolumeMount {
+public class SecurityGroupSpec {
     private String name;
-    private String mountPath;
-    private String hostPath;
+    private String description;
+    private List<SecurityRule> rules;
 }

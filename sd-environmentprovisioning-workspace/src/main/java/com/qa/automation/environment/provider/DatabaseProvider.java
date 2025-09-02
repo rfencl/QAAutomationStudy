@@ -31,12 +31,4 @@ public interface DatabaseProvider {
     boolean isAvailable();
 }
 
-/**
- * Configuration for database instance creation.
- */
-class DatabaseInstanceConfig {
-    private String instanceType;
-    private String version;
-    private String environmentId;
-    // Additional configuration properties would be added here
-}
+

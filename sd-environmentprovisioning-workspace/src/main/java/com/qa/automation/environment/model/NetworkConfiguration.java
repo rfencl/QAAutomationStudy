@@ -16,39 +16,4 @@ public class NetworkConfiguration {
     private List<LoadBalancer> loadBalancers;
 }
 
-@Data
-@Builder
-class VirtualNetwork {
-    private String id;
-    private String name;
-    private String cidr;
-    private String status;
-}
 
-@Data
-@Builder
-class Subnet {
-    private String id;
-    private String name;
-    private String cidr;
-    private String type;
-    private String availabilityZone;
-}
-
-@Data
-@Builder
-class SecurityGroup {
-    private String id;
-    private String name;
-    private List<SecurityRule> rules;
-}
-
-@Data
-@Builder
-class LoadBalancer {
-    private String id;
-    private String name;
-    private String dnsName;
-    private String type;
-    private List<String> subnets;
-}
