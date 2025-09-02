@@ -1,0 +1,8 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.debug.settings.onBuildFailureProceed": true,
+    "java.test.defaultConfig": "default",
+    "java.project.sourcePaths": ["src/test/java"],
+    "java.project.outputPath": "target/classes"
+}

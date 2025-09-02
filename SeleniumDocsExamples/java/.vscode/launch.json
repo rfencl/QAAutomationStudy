@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "FirstScript",
+            "request": "launch",
+            "mainClass": "dev.selenium.getting_started.FirstScript",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
+            "name": "Run FirstScript",
+            "request": "launch",
+            "mainClass": "dev.selenium.getting_started.FirstScript",
+            "projectName": "selenium-examples",
+            "classPaths": ["target/test-classes"],
+            "modulePaths": []
+        },
+        {
+            "type": "java",
+            "name": "Debug Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        }
+    ]
+}

@@ -4,3 +4,4 @@ database-workspace/target/
 database-workspace/.idea
 selenium-advanced/allure-results/
 selenium-advanced/allure-report/
+/SeleniumDocsExamples/java/bin
