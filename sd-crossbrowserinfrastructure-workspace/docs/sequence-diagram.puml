@@ -1,0 +1,177 @@
+@startuml CrossBrowserInfrastructure_SequenceDiagram
+
+title Cross-Browser Infrastructure - Session Creation and Management Flow
+
+actor "Test Framework" as TestFramework
+participant "CrossBrowserInfrastructureSystem" as Infrastructure
+participant "CrossBrowserManager" as Manager
+participant "BrowserLoadBalancer" as LoadBalancer
+participant "LocalBrowserProvider" as LocalProvider
+participant "CloudBrowserProvider" as CloudProvider
+participant "BrowserSessionManager" as SessionManager
+participant "WebDriver" as Driver
+
+== Session Creation Request ==
+
+TestFramework -> Infrastructure: createSession(BrowserCapability)
+activate Infrastructure
+
+Infrastructure -> Manager: createSession(capability)
+activate Manager
+
+Manager -> Manager: selectOptimalProvider(capability)
+note right: Determine best provider\nbased on capability requirements
+
+Manager -> LoadBalancer: selectProvider(compatibleProviders, capability)
+activate LoadBalancer
+
+LoadBalancer -> LocalProvider: supports(capability)
+activate LocalProvider
+LocalProvider --> LoadBalancer: true/false
+deactivate LocalProvider
+
+LoadBalancer -> CloudProvider: supports(capability)
+activate CloudProvider
+CloudProvider --> LoadBalancer: true/false
+deactivate CloudProvider
+
+LoadBalancer -> LocalProvider: getMetrics()
+activate LocalProvider
+LocalProvider --> LoadBalancer: ProviderMetrics
+deactivate LocalProvider
+
+LoadBalancer -> CloudProvider: getMetrics()
+activate CloudProvider
+CloudProvider --> LoadBalancer: ProviderMetrics
+deactivate CloudProvider
+
+LoadBalancer -> LoadBalancer: calculateProviderScore(provider, capability)
+note right: Score based on load, latency,\ncost, and reliability
+
+LoadBalancer --> Manager: selectedProvider
+deactivate LoadBalancer
+
+== Provider Session Creation ==
+
+alt Local Provider Selected
+    Manager -> LocalProvider: createSession(capability)
+    activate LocalProvider
+    
+    LocalProvider -> LocalProvider: hasCapacity()
+    LocalProvider -> LocalProvider: createWebDriver(capability)
+    LocalProvider -> Driver: new ChromeDriver(options) / new FirefoxDriver(options)
+    activate Driver
+    
+    LocalProvider -> LocalProvider: generateSessionId()
+    LocalProvider --> Manager: BrowserSession
+    deactivate LocalProvider
+    
+else Cloud Provider Selected
+    Manager -> CloudProvider: createSession(capability)
+    activate CloudProvider
+    
+    CloudProvider -> CloudProvider: hasCapacity()
+    CloudProvider -> CloudProvider: createCloudWebDriver(capability)
+    CloudProvider -> Driver: new RemoteWebDriver(hubUrl, capabilities)
+    activate Driver
+    
+    CloudProvider -> CloudProvider: generateSessionId()
+    CloudProvider --> Manager: BrowserSession
+    deactivate CloudProvider
+end
+
+== Session Registration ==
+
+Manager -> SessionManager: registerSession(session)
+activate SessionManager
+
+SessionManager -> SessionManager: activeSessions.put(sessionId, session)
+SessionManager -> SessionManager: scheduleCleanupTask()
+note right: Schedule automatic cleanup\nfor idle sessions
+
+SessionManager --> Manager: void
+deactivate SessionManager
+
+Manager --> Infrastructure: BrowserSession
+deactivate Manager
+
+Infrastructure --> TestFramework: BrowserSession
+deactivate Infrastructure
+
+== Test Execution ==
+
+TestFramework -> Infrastructure: getSession(sessionId)
+activate Infrastructure
+
+Infrastructure -> SessionManager: getSession(sessionId)
+activate SessionManager
+
+SessionManager -> SessionManager: updateLastActivity(sessionId)
+SessionManager --> Infrastructure: BrowserSession
+deactivate SessionManager
+
+Infrastructure --> TestFramework: BrowserSession
+deactivate Infrastructure
+
+TestFramework -> Driver: get(url)
+TestFramework -> Driver: findElement(locator)
+TestFramework -> Driver: click() / sendKeys()
+
+== Session Cleanup ==
+
+TestFramework -> Infrastructure: closeSession(sessionId)
+activate Infrastructure
+
+Infrastructure -> SessionManager: closeSession(sessionId)
+activate SessionManager
+
+SessionManager -> SessionManager: activeSessions.remove(sessionId)
+SessionManager -> Driver: quit()
+deactivate Driver
+
+SessionManager --> Infrastructure: void
+deactivate SessionManager
+
+Infrastructure --> TestFramework: void
+deactivate Infrastructure
+
+== Automatic Cleanup (Background Process) ==
+
+loop Every 5 minutes
+    SessionManager -> SessionManager: cleanupIdleSessions()
+    note right: Remove sessions idle\nfor more than 30 minutes
+    
+    SessionManager -> SessionManager: findIdleSessions()
+    SessionManager -> Driver: quit() (for idle sessions)
+    SessionManager -> SessionManager: removeFromActiveSessions()
+end
+
+== Metrics and Monitoring ==
+
+TestFramework -> Infrastructure: getInfrastructureMetrics()
+activate Infrastructure
+
+Infrastructure -> SessionManager: getActiveSessions()
+activate SessionManager
+SessionManager --> Infrastructure: List<BrowserSession>
+deactivate SessionManager
+
+Infrastructure -> Infrastructure: calculateMetrics()
+note right: Aggregate sessions by\nprovider and browser type
+
+Infrastructure --> TestFramework: InfrastructureMetrics
+deactivate Infrastructure
+
+== Load Balancing Decision Flow ==
+
+note over LoadBalancer: Provider Selection Algorithm
+note over LoadBalancer: 1. Filter compatible providers
+note over LoadBalancer: 2. Check provider capacity
+note over LoadBalancer: 3. Calculate weighted score:
+note over LoadBalancer:    - Load: 30%
+note over LoadBalancer:    - Latency: 20%
+note over LoadBalancer:    - Cost: 30%
+note over LoadBalancer:    - Reliability: 20%
+note over LoadBalancer: 4. Select lowest scoring provider
+
+@enduml

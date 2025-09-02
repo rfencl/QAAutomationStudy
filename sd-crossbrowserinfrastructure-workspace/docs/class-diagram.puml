@@ -1,0 +1,176 @@
+@startuml CrossBrowserInfrastructure_ClassDiagram
+
+!define RECTANGLE class
+
+package "Cross-Browser Infrastructure System" {
+    
+    RECTANGLE CrossBrowserInfrastructureSystem {
+        -browserManager: CrossBrowserManager
+        -objectMapper: ObjectMapper
+        +createSession(capability: BrowserCapability): BrowserSession
+        +closeSession(sessionId: String): void
+        +getSession(sessionId: String): BrowserSession
+        +getActiveSessions(): List<BrowserSession>
+        +exportSessionsAsJson(): String
+        +getInfrastructureMetrics(): InfrastructureMetrics
+    }
+    
+    RECTANGLE CrossBrowserManager {
+        -providers: Map<String, BrowserProvider>
+        -sessionManager: BrowserSessionManager
+        -loadBalancer: BrowserLoadBalancer
+        -config: BrowserMatrixConfig
+        +createSession(capability: BrowserCapability): BrowserSession
+        +closeSession(sessionId: String): void
+        +getActiveSessions(): List<BrowserSession>
+        +getSession(sessionId: String): BrowserSession
+        -selectOptimalProvider(capability: BrowserCapability): BrowserProvider
+        -initializeProviders(): void
+        -loadBrowserMatrix(): BrowserMatrixConfig
+    }
+    
+    RECTANGLE BrowserSessionManager {
+        -activeSessions: ConcurrentMap<String, BrowserSession>
+        -cleanupExecutor: ScheduledExecutorService
+        +registerSession(session: BrowserSession): void
+        +closeSession(sessionId: String): void
+        +getSession(sessionId: String): BrowserSession
+        +getActiveSessions(): List<BrowserSession>
+        -startCleanupTask(): void
+        -cleanupIdleSessions(): void
+    }
+    
+    RECTANGLE BrowserLoadBalancer {
+        +selectProvider(providers: List<BrowserProvider>, capability: BrowserCapability): BrowserProvider
+        -calculateProviderScore(provider: BrowserProvider, capability: BrowserCapability): double
+    }
+    
+    interface BrowserProvider {
+        +getName(): String
+        +supports(capability: BrowserCapability): boolean
+        +createSession(capability: BrowserCapability): BrowserSession
+        +closeSession(sessionId: String): void
+        +getCostPerSession(capability: BrowserCapability): double
+        +getMetrics(): ProviderMetrics
+        +hasCapacity(): boolean
+    }
+    
+    RECTANGLE LocalBrowserProvider {
+        -sessionCounts: Map<String, Integer>
+        -maxSessions: int
+        +getName(): String
+        +supports(capability: BrowserCapability): boolean
+        +createSession(capability: BrowserCapability): BrowserSession
+        +closeSession(sessionId: String): void
+        +getCostPerSession(capability: BrowserCapability): double
+        +getMetrics(): ProviderMetrics
+        +hasCapacity(): boolean
+        -createWebDriver(capability: BrowserCapability): WebDriver
+    }
+    
+    RECTANGLE CloudBrowserProvider {
+        -sessionCounts: Map<String, Integer>
+        -maxSessions: int
+        +getName(): String
+        +supports(capability: BrowserCapability): boolean
+        +createSession(capability: BrowserCapability): BrowserSession
+        +closeSession(sessionId: String): void
+        +getCostPerSession(capability: BrowserCapability): double
+        +getMetrics(): ProviderMetrics
+        +hasCapacity(): boolean
+        -createCloudWebDriver(capability: BrowserCapability): WebDriver
+    }
+    
+    RECTANGLE BrowserCapability {
+        -browserName: String
+        -browserVersion: String
+        -platform: String
+        -platformVersion: String
+        -screenResolution: String
+        -deviceName: String
+        -mobile: boolean
+        -headless: boolean
+        -additionalCapabilities: Map<String, Object>
+        +builder(): BrowserCapabilityBuilder
+    }
+    
+    RECTANGLE BrowserSession {
+        -sessionId: String
+        -driver: WebDriver
+        -capability: BrowserCapability
+        -provider: String
+        -startTime: Instant
+        -lastActivity: Instant
+        -status: SessionStatus
+        -metadata: Map<String, Object>
+        +builder(): BrowserSessionBuilder
+    }
+    
+    RECTANGLE ProviderMetrics {
+        -providerName: String
+        -currentLoad: int
+        -maxCapacity: int
+        -averageLatency: double
+        -successRate: double
+        -costPerSession: double
+        -lastUpdated: Instant
+    }
+    
+    RECTANGLE InfrastructureMetrics {
+        -totalActiveSessions: int
+        -sessionsByProvider: Map<String, Long>
+        -sessionsByBrowser: Map<String, Long>
+        -timestamp: Instant
+    }
+    
+    RECTANGLE BrowserMatrixConfig {
+        +browsers: Map<String, BrowserConfig>
+        +providers: Map<String, ProviderConfig>
+    }
+    
+    RECTANGLE BrowserConfig {
+        +versions: List<String>
+        +platforms: List<String>
+        +mobile: boolean
+        +devices: List<String>
+    }
+    
+    RECTANGLE ProviderConfig {
+        +enabled: boolean
+        +maxSessions: int
+        +browsers: List<String>
+        +credentials: Map<String, String>
+    }
+    
+    enum SessionStatus {
+        ACTIVE
+        IDLE
+        TERMINATED
+        ERROR
+    }
+    
+    exception BrowserProviderException {
+        +BrowserProviderException(message: String)
+        +BrowserProviderException(message: String, cause: Throwable)
+    }
+}
+
+' Relationships
+CrossBrowserInfrastructureSystem *-- CrossBrowserManager
+CrossBrowserManager *-- BrowserSessionManager
+CrossBrowserManager *-- BrowserLoadBalancer
+CrossBrowserManager *-- BrowserMatrixConfig
+CrossBrowserManager --> BrowserProvider
+BrowserProvider <|-- LocalBrowserProvider
+BrowserProvider <|-- CloudBrowserProvider
+BrowserSessionManager --> BrowserSession
+BrowserSession *-- BrowserCapability
+BrowserSession --> SessionStatus
+BrowserProvider --> ProviderMetrics
+BrowserProvider --> BrowserProviderException
+CrossBrowserInfrastructureSystem --> InfrastructureMetrics
+BrowserMatrixConfig *-- BrowserConfig
+BrowserMatrixConfig *-- ProviderConfig
+BrowserLoadBalancer --> BrowserProvider
+
+@enduml

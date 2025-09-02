@@ -1,0 +1,49 @@
+browsers:
+  chrome:
+    versions: ["latest", "latest-1", "latest-2"]
+    platforms: ["Windows 10", "macOS", "Linux"]
+    mobile: false
+    
+  firefox:
+    versions: ["latest", "latest-1", "latest-2"]
+    platforms: ["Windows 10", "macOS", "Linux"]
+    mobile: false
+    
+  safari:
+    versions: ["latest", "latest-1"]
+    platforms: ["macOS"]
+    mobile: false
+    
+  mobile-chrome:
+    versions: ["latest"]
+    platforms: ["Android"]
+    mobile: true
+    devices: ["Pixel 4", "Galaxy S21", "OnePlus 9"]
+    
+  mobile-safari:
+    versions: ["latest"]
+    platforms: ["iOS"]
+    mobile: true
+    devices: ["iPhone 12", "iPhone 13", "iPad Pro"]
+
+providers:
+  local-grid:
+    enabled: true
+    maxSessions: 20
+    browsers: ["chrome", "firefox"]
+    
+  browserstack:
+    enabled: true
+    maxSessions: 100
+    browsers: ["chrome", "firefox", "safari", "mobile-chrome", "mobile-safari"]
+    credentials:
+      username: ${BROWSERSTACK_USERNAME}
+      access-key: ${BROWSERSTACK_ACCESS_KEY}
+      
+  sauce-labs:
+    enabled: true
+    maxSessions: 50
+    browsers: ["chrome", "firefox", "safari"]
+    credentials:
+      username: ${SAUCE_USERNAME}
+      access-key: ${SAUCE_ACCESS_KEY}

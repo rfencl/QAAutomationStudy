@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="CrossBrowserInfrastructureSuite" parallel="false" thread-count="1">
+    <test name="CrossBrowserInfrastructureTests">
+        <classes>
+            <class name="com.qa.crossbrowser.CrossBrowserInfrastructureTest"/>
+            <class name="com.qa.crossbrowser.CrossBrowserIntegrationTest"/>
+        </classes>
+    </test>
+</suite>
