@@ -1,0 +1,158 @@
+@startuml TestMonitoringSystem_ClassDiagram
+
+!define RECTANGLE class
+
+package "Test Monitoring System" {
+    
+    RECTANGLE TestMonitoringDashboard {
+        -realTimeService: RealTimeDataService
+        -alertingService: AlertingService
+        -objectMapper: ObjectMapper
+        +publishTestResult(testResult: TestResult): void
+        +subscribe(subscriber: DashboardSubscriber): void
+        +addAlertRule(rule: AlertRule): void
+        +addAlertListener(listener: AlertListener): void
+        +getCurrentMetrics(projectId: String): DashboardMetrics
+        +getTestResults(projectId: String): List<TestResult>
+        +exportMetricsAsJson(projectId: String): String
+    }
+    
+    RECTANGLE RealTimeDataService {
+        -testResults: ConcurrentMap<String, List<TestResult>>
+        -subscribers: List<DashboardSubscriber>
+        -metricsCalculator: MetricsCalculator
+        +publishTestResult(testResult: TestResult): void
+        +subscribe(subscriber: DashboardSubscriber): void
+        +unsubscribe(subscriber: DashboardSubscriber): void
+        -notifySubscribers(update: DashboardUpdate): void
+        +getTestResults(projectId: String): List<TestResult>
+        +getCurrentMetrics(projectId: String): DashboardMetrics
+    }
+    
+    RECTANGLE MetricsCalculator {
+        +calculateMetrics(testResults: List<TestResult>): DashboardMetrics
+        -calculatePassRate(results: List<TestResult>): double
+        -calculateFailureRate(results: List<TestResult>): double
+        -calculateAverageExecutionTime(results: List<TestResult>): double
+        -calculateTestVelocity(results: List<TestResult>): int
+        -calculateTopFailures(results: List<TestResult>): List<TopFailure>
+        -calculateEnvironmentMetrics(results: List<TestResult>): Map<String, Integer>
+    }
+    
+    RECTANGLE AlertingService {
+        -alertRules: List<AlertRule>
+        -alertListeners: List<AlertListener>
+        +addAlertRule(rule: AlertRule): void
+        +addAlertListener(listener: AlertListener): void
+        +evaluateAlerts(testResult: TestResult, metrics: DashboardMetrics): void
+        -evaluateRule(rule: AlertRule, testResult: TestResult, metrics: DashboardMetrics): boolean
+        -triggerAlert(rule: AlertRule, testResult: TestResult, metrics: DashboardMetrics): void
+        -generateAlertMessage(rule: AlertRule, testResult: TestResult, metrics: DashboardMetrics): String
+    }
+    
+    RECTANGLE TestResult {
+        -testId: String
+        -testName: String
+        -projectId: String
+        -environment: String
+        -status: TestStatus
+        -startTime: Instant
+        -endTime: Instant
+        -executionTime: Duration
+        -errorMessage: String
+        -metadata: Map<String, Object>
+        +builder(): TestResultBuilder
+    }
+    
+    RECTANGLE DashboardMetrics {
+        -totalTests: int
+        -passRate: double
+        -failureRate: double
+        -averageExecutionTime: double
+        -testVelocity: int
+        -topFailures: List<TopFailure>
+        -environmentMetrics: Map<String, Integer>
+        -lastUpdated: Instant
+        +builder(): DashboardMetricsBuilder
+    }
+    
+    RECTANGLE DashboardUpdate {
+        -projectId: String
+        -testResult: TestResult
+        -metrics: DashboardMetrics
+        -timestamp: Instant
+        +builder(): DashboardUpdateBuilder
+    }
+    
+    RECTANGLE AlertRule {
+        -id: String
+        -name: String
+        -projectId: String
+        -type: AlertType
+        -threshold: double
+        -severity: AlertSeverity
+        -enabled: boolean
+    }
+    
+    RECTANGLE Alert {
+        -ruleId: String
+        -projectId: String
+        -severity: AlertSeverity
+        -message: String
+        -triggeredAt: Instant
+    }
+    
+    RECTANGLE TopFailure {
+        -testName: String
+        -failureCount: int
+        -lastError: String
+    }
+    
+    enum TestStatus {
+        RUNNING
+        PASSED
+        FAILED
+        SKIPPED
+    }
+    
+    enum AlertType {
+        FAILURE_RATE
+        CONSECUTIVE_FAILURES
+        EXECUTION_TIME
+    }
+    
+    enum AlertSeverity {
+        LOW
+        MEDIUM
+        HIGH
+        CRITICAL
+    }
+    
+    interface DashboardSubscriber {
+        +onDashboardUpdate(update: DashboardUpdate): void
+    }
+    
+    interface AlertListener {
+        +onAlert(alert: Alert): void
+    }
+}
+
+' Relationships
+TestMonitoringDashboard *-- RealTimeDataService
+TestMonitoringDashboard *-- AlertingService
+RealTimeDataService *-- MetricsCalculator
+RealTimeDataService --> DashboardSubscriber
+AlertingService --> AlertListener
+RealTimeDataService --> TestResult
+MetricsCalculator --> DashboardMetrics
+AlertingService --> AlertRule
+AlertingService --> Alert
+DashboardMetrics *-- TopFailure
+DashboardUpdate *-- TestResult
+DashboardUpdate *-- DashboardMetrics
+TestResult --> TestStatus
+AlertRule --> AlertType
+AlertRule --> AlertSeverity
+Alert --> AlertSeverity
+
+@enduml

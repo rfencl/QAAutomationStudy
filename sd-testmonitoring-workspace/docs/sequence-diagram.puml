@@ -1,0 +1,106 @@
+@startuml TestMonitoringSystem_SequenceDiagram
+
+title Real-time Test Monitoring Dashboard - Test Result Processing Flow
+
+actor "Test Execution Engine" as TestEngine
+participant "TestMonitoringDashboard" as Dashboard
+participant "RealTimeDataService" as RealTimeService
+participant "MetricsCalculator" as Calculator
+participant "AlertingService" as AlertService
+participant "DashboardSubscriber" as Subscriber
+participant "AlertListener" as AlertListener
+
+== Test Result Publishing ==
+
+TestEngine -> Dashboard: publishTestResult(testResult)
+activate Dashboard
+
+Dashboard -> RealTimeService: publishTestResult(testResult)
+activate RealTimeService
+
+RealTimeService -> RealTimeService: Store test result in\nconcurrent map by projectId
+note right: Thread-safe storage using\nConcurrentHashMap
+
+RealTimeService -> Calculator: calculateMetrics(testResults)
+activate Calculator
+
+Calculator -> Calculator: Calculate total tests,\npass rate, failure rate
+Calculator -> Calculator: Calculate average execution time
+Calculator -> Calculator: Calculate test velocity\n(tests per hour)
+Calculator -> Calculator: Identify top failures
+Calculator -> Calculator: Calculate environment metrics
+
+Calculator --> RealTimeService: DashboardMetrics
+deactivate Calculator
+
+RealTimeService -> RealTimeService: Create DashboardUpdate\nwith test result and metrics
+
+== Real-time Notification ==
+
+RealTimeService -> Subscriber: onDashboardUpdate(update)
+activate Subscriber
+note right: Parallel notification\nto all subscribers
+Subscriber -> Subscriber: Update dashboard UI\nin real-time
+deactivate Subscriber
+
+== Alert Evaluation ==
+
+RealTimeService -> Dashboard: Notify about new test result
+Dashboard -> AlertService: evaluateAlerts(testResult, metrics)
+activate AlertService
+
+AlertService -> AlertService: Get alert rules\nfor project
+loop For each enabled alert rule
+    AlertService -> AlertService: evaluateRule(rule, testResult, metrics)
+    
+    alt Rule condition met
+        AlertService -> AlertService: triggerAlert(rule, testResult, metrics)
+        AlertService -> AlertService: Generate alert message
+        AlertService -> AlertListener: onAlert(alert)
+        activate AlertListener
+        AlertListener -> AlertListener: Send notification\n(email, Slack, etc.)
+        deactivate AlertListener
+    end
+end
+
+deactivate AlertService
+deactivate RealTimeService
+deactivate Dashboard
+
+== Dashboard Query ==
+
+actor "Dashboard User" as User
+User -> Dashboard: getCurrentMetrics(projectId)
+activate Dashboard
+
+Dashboard -> RealTimeService: getCurrentMetrics(projectId)
+activate RealTimeService
+
+RealTimeService -> RealTimeService: Get stored test results\nfor project
+RealTimeService -> Calculator: calculateMetrics(testResults)
+activate Calculator
+
+Calculator --> RealTimeService: DashboardMetrics
+deactivate Calculator
+
+RealTimeService --> Dashboard: DashboardMetrics
+deactivate RealTimeService
+
+Dashboard --> User: Current metrics and statistics
+deactivate Dashboard
+
+== Concurrent Test Processing ==
+
+note over TestEngine, AlertListener: Multiple test engines can publish results concurrently
+
+par Concurrent Test Execution
+    TestEngine -> Dashboard: publishTestResult(testResult1)
+else
+    TestEngine -> Dashboard: publishTestResult(testResult2)
+else
+    TestEngine -> Dashboard: publishTestResult(testResult3)
+end
+
+note over RealTimeService: Thread-safe processing ensures\ndata consistency and real-time updates
+
+@enduml

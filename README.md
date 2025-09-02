@@ -2,6 +2,35 @@
 
 This repository contains comprehensive workspaces for advanced QA automation learning, covering all the key areas mentioned in your study plan. Each workspace includes practical exercises, real-world examples, and hands-on implementations.
 
+### 18. SD Test Monitoring Workspace (`sd-testmonitoring-workspace/`)
+**Focus**: Real-time Test Monitoring Dashboard System with advanced analytics and intelligent alerting
+
+**Key Topics Covered**:
+- Event-driven architecture for real-time test monitoring
+- Thread-safe concurrent processing with project isolation
+- Advanced metrics calculation and failure analysis
+- Configurable alerting system with multiple severity levels
+- Observer pattern implementation for dashboard subscriptions
+- JSON export capabilities for external system integration
+
+**Exercises Implemented**:
+- ✅ **TestMonitoringDashboard** - Main orchestrator with unified API
+- ✅ **RealTimeDataService** - Event-driven test result processing
+- ✅ **MetricsCalculator** - Comprehensive analytics engine
+- ✅ **AlertingService** - Rule-based intelligent alerting
+- ✅ **Thread-Safe Architecture** - Concurrent collections and parallel processing
+- ✅ **Comprehensive Testing** - Unit tests, integration tests, and live demonstrations
+- ✅ **PlantUML Diagrams** - Class and sequence diagrams for system architecture
+
+**Key Features**:
+- Real-time dashboard updates with sub-millisecond latency
+- Multi-project monitoring with complete isolation
+- Advanced failure analysis and top failures identification
+- Configurable alert rules (failure rate, execution time, consecutive failures)
+- Thread-safe concurrent test result publishing
+- JSON export for CI/CD integration and external dashboards
+- Production-ready error handling and graceful degradation
+
 ### 17. SD Microservices Testing Workspace (`sd-microservicestesting-workspace/`)
 **Focus**: Comprehensive microservices testing framework with contract testing, service virtualization, and end-to-end testing
 
@@ -813,11 +842,11 @@ Feel free to extend these workspaces with:
 | **qa-concepts** | ✅ Complete | N/A | N/A | Theory, methodologies, best practices |
 
 ### Code Metrics
-- **Total Workspaces**: 16
-- **Maven Projects**: 13
+- **Total Workspaces**: 18
+- **Maven Projects**: 15
 - **Page Objects**: 17+ (across selenium workspaces)
-- **Test Classes**: 20+
-- **Test Methods**: 65+
+- **Test Classes**: 25+
+- **Test Methods**: 75+
 - **Parallel Threads**: Up to 6 concurrent
 - **Supported Browsers**: Chrome, Firefox
 - **Database Support**: H2, MySQL
@@ -872,8 +901,8 @@ All workspaces follow industry best practices and are production-ready:
 This comprehensive workspace collection provides everything needed for advanced QA automation learning and interview preparation. Each component is production-ready and follows industry best practices.
 
 ### 🎆 Achievement Summary
-- **16 Complete Workspaces** covering all aspects of QA automation
-- **65+ Test Methods** with comprehensive coverage
+- **18 Complete Workspaces** covering all aspects of QA automation
+- **75+ Test Methods** with comprehensive coverage
 - **Parallel Execution** with up to 6 concurrent threads
 - **Advanced Java Features** including functional programming
 - **Multi-Browser Support** with headless execution
