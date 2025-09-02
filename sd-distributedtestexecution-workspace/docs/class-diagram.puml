@@ -1,0 +1,195 @@
+@startuml DistributedTestExecution_ClassDiagram
+
+!define RECTANGLE class
+
+package "Common Domain" {
+    RECTANGLE TestTask {
+        -String taskId
+        -String testClass
+        -String testMethod
+        -Map<String, String> parameters
+        -int priority
+        +getTaskId(): String
+        +getTestClass(): String
+        +getTestMethod(): String
+        +getParameters(): Map<String, String>
+        +getPriority(): int
+    }
+    
+    RECTANGLE TestResult {
+        -String taskId
+        -String nodeId
+        -Status status
+        -String message
+        -String stackTrace
+        -LocalDateTime startTime
+        -LocalDateTime endTime
+        -long executionTimeMs
+        +isSuccess(): boolean
+    }
+    
+    RECTANGLE NodeInfo {
+        -String nodeId
+        -String hostname
+        -int port
+        -int maxConcurrentTasks
+        -Status status
+        -int currentTasks
+        -LocalDateTime lastHeartbeat
+        +canAcceptTask(): boolean
+        +getLoadPercentage(): double
+    }
+    
+    enum Status {
+        AVAILABLE
+        BUSY
+        OFFLINE
+        ERROR
+    }
+    
+    NodeInfo --> Status
+}
+
+package "Communication Layer" {
+    RECTANGLE Message<T> {
+        -String messageId
+        -Type type
+        -String senderId
+        -String receiverId
+        -T payload
+        -LocalDateTime timestamp
+    }
+    
+    enum MessageType {
+        TASK_ASSIGNMENT
+        TASK_RESULT
+        HEARTBEAT
+        NODE_REGISTRATION
+        NODE_STATUS_UPDATE
+        SHUTDOWN_REQUEST
+        ACK
+    }
+    
+    RECTANGLE HttpCommunicationService {
+        -ObjectMapper objectMapper
+        -CloseableHttpClient httpClient
+        -ExecutorService executorService
+        +sendMessageAsync<T>(url: String, message: Message<T>): CompletableFuture<Boolean>
+        +sendMessage<T>(url: String, message: Message<T>): boolean
+        +parseMessage<T>(json: String, payloadType: Class<T>): Message<T>
+        +serializeMessage<T>(message: Message<T>): String
+        +shutdown(): void
+    }
+    
+    Message --> MessageType
+}
+
+package "Coordinator Components" {
+    RECTANGLE TaskQueue {
+        -BlockingQueue<TestTask> pendingTasks
+        -Map<String, TestTask> assignedTasks
+        -Map<String, TestTask> completedTasks
+        +addTask(task: TestTask): void
+        +getNextTask(): TestTask
+        +completeTask(taskId: String): void
+        +requeueTask(taskId: String): void
+        +isEmpty(): boolean
+        +getQueueStats(): String
+    }
+    
+    RECTANGLE NodeRegistry {
+        -Map<String, NodeInfo> nodes
+        -int heartbeatTimeoutSeconds
+        +registerNode(nodeInfo: NodeInfo): void
+        +updateNodeStatus(nodeId: String, status: Status, currentTasks: int): void
+        +getBestAvailableNode(): NodeInfo
+        +getAvailableNodes(): List<NodeInfo>
+        +cleanupUnhealthyNodes(): void
+        +getRegistryStats(): String
+    }
+    
+    RECTANGLE TestCoordinator {
+        -String coordinatorId
+        -TaskQueue taskQueue
+        -NodeRegistry nodeRegistry
+        -HttpCommunicationService communicationService
+        -ExecutorService executorService
+        -ScheduledExecutorService scheduledExecutor
+        -ConcurrentHashMap<String, TestResult> results
+        -HttpServer httpServer
+        +start(): void
+        +submitTask(task: TestTask): void
+        +submitTasks(tasks: List<TestTask>): void
+        +getResults(): List<TestResult>
+        +waitForCompletion(timeoutSeconds: long): boolean
+        +shutdown(): void
+        -taskDistributionLoop(): void
+        -assignTaskToNode(task: TestTask, node: NodeInfo): void
+    }
+    
+    TestCoordinator --> TaskQueue
+    TestCoordinator --> NodeRegistry
+    TestCoordinator --> HttpCommunicationService
+    TaskQueue --> TestTask
+    NodeRegistry --> NodeInfo
+}
+
+package "Node Components" {
+    RECTANGLE TestExecutor {
+        -String nodeId
+        -ExecutorService executorService
+        +executeTaskAsync(task: TestTask): CompletableFuture<TestResult>
+        +executeTask(task: TestTask): TestResult
+        +shutdown(): void
+        -determineStatus(listener: TestResultListener): Status
+    }
+    
+    RECTANGLE TestResultListener {
+        -AtomicInteger passedCount
+        -AtomicInteger failedCount
+        -AtomicInteger skippedCount
+        -String resultMessage
+        -String stackTrace
+        +onTestSuccess(result: ITestResult): void
+        +onTestFailure(result: ITestResult): void
+        +onTestSkipped(result: ITestResult): void
+        +getPassedCount(): int
+        +getFailedCount(): int
+        +getSkippedCount(): int
+    }
+    
+    RECTANGLE TestNode {
+        -String nodeId
+        -String hostname
+        -int port
+        -int maxConcurrentTasks
+        -String coordinatorUrl
+        -TestExecutor testExecutor
+        -HttpCommunicationService communicationService
+        -AtomicInteger currentTasks
+        -HttpServer httpServer
+        +start(): void
+        +shutdown(): void
+        +getNodeId(): String
+        +getCurrentTaskCount(): int
+        -registerWithCoordinator(): void
+        -sendHeartbeat(): void
+        -executeTask(task: TestTask): void
+        -sendResultToCoordinator(result: TestResult): void
+    }
+    
+    TestNode --> TestExecutor
+    TestNode --> HttpCommunicationService
+    TestExecutor --> TestResultListener
+    TestExecutor --> TestTask
+    TestExecutor --> TestResult
+}
+
+' Relationships between packages
+TestCoordinator ..> Message : uses
+TestNode ..> Message : uses
+TestExecutor ..> TestTask : executes
+TestExecutor ..> TestResult : produces
+TestCoordinator ..> TestResult : collects
+
+@enduml

@@ -1,0 +1,135 @@
+@startuml DistributedTestExecution_SequenceFlow
+
+actor Client
+participant "TestCoordinator" as Coordinator
+participant "TaskQueue" as Queue
+participant "NodeRegistry" as Registry
+participant "TestNode1" as Node1
+participant "TestNode2" as Node2
+participant "TestExecutor" as Executor
+participant "TestNG" as TestNG
+
+== System Initialization ==
+
+Client -> Coordinator : start()
+activate Coordinator
+Coordinator -> Coordinator : setupHttpServer()
+Coordinator -> Coordinator : startTaskDistributionLoop()
+Coordinator -> Coordinator : startPeriodicCleanup()
+
+Node1 -> Node1 : start()
+activate Node1
+Node1 -> Coordinator : POST /register\n(NodeInfo)
+Coordinator -> Registry : registerNode(nodeInfo)
+Coordinator --> Node1 : 200 OK
+
+Node2 -> Node2 : start()
+activate Node2
+Node2 -> Coordinator : POST /register\n(NodeInfo)
+Coordinator -> Registry : registerNode(nodeInfo)
+Coordinator --> Node2 : 200 OK
+
+== Heartbeat Mechanism ==
+
+loop Every 10 seconds
+    Node1 -> Coordinator : POST /heartbeat\n(NodeInfo with current status)
+    Coordinator -> Registry : updateNodeStatus()
+    Coordinator --> Node1 : 200 OK
+    
+    Node2 -> Coordinator : POST /heartbeat\n(NodeInfo with current status)
+    Coordinator -> Registry : updateNodeStatus()
+    Coordinator --> Node2 : 200 OK
+end
+
+== Test Task Submission ==
+
+Client -> Coordinator : submitTasks(List<TestTask>)
+loop For each task
+    Coordinator -> Queue : addTask(testTask)
+end
+
+== Task Distribution Loop ==
+
+loop Continuous Distribution
+    Coordinator -> Queue : getNextTask() [blocking]
+    Queue --> Coordinator : TestTask
+    
+    Coordinator -> Registry : getBestAvailableNode()
+    Registry --> Coordinator : NodeInfo (least loaded)
+    
+    alt Node Available
+        Coordinator -> Node1 : POST /execute\n(Message<TestTask>)
+        activate Node1
+        Node1 -> Node1 : executeTask(testTask)
+        Node1 -> Executor : executeTaskAsync(testTask)
+        activate Executor
+        
+        Executor -> TestNG : createSuite(testClass, testMethod)
+        Executor -> TestNG : run()
+        activate TestNG
+        TestNG -> TestNG : executeTest()
+        TestNG --> Executor : TestResult via Listener
+        deactivate TestNG
+        
+        Executor --> Node1 : TestResult
+        deactivate Executor
+        
+        Node1 -> Coordinator : POST /result\n(Message<TestResult>)
+        Coordinator -> Queue : completeTask(taskId)
+        Coordinator -> Coordinator : storeResult(testResult)
+        Coordinator --> Node1 : 200 OK
+        deactivate Node1
+        
+    else No Available Nodes
+        Coordinator -> Queue : requeueTask(taskId)
+        Coordinator -> Coordinator : sleep(1000ms)
+    end
+end
+
+== Parallel Execution on Multiple Nodes ==
+
+par Node1 Execution
+    Coordinator -> Node1 : POST /execute (Task A)
+    Node1 -> Executor : executeTaskAsync(Task A)
+    Executor -> TestNG : run Task A
+    TestNG --> Executor : Result A
+    Executor --> Node1 : Result A
+    Node1 -> Coordinator : POST /result (Result A)
+and Node2 Execution
+    Coordinator -> Node2 : POST /execute (Task B)
+    Node2 -> Executor : executeTaskAsync(Task B)
+    Executor -> TestNG : run Task B
+    TestNG --> Executor : Result B
+    Executor --> Node2 : Result B
+    Node2 -> Coordinator : POST /result (Result B)
+end
+
+== Result Collection ==
+
+Client -> Coordinator : waitForCompletion(timeout)
+loop Until all tasks complete or timeout
+    Coordinator -> Queue : isEmpty()
+    Queue --> Coordinator : boolean
+    alt All tasks complete
+        Coordinator --> Client : true
+    else Timeout reached
+        Coordinator --> Client : false
+    end
+end
+
+Client -> Coordinator : getResults()
+Coordinator --> Client : List<TestResult>
+
+== System Shutdown ==
+
+Client -> Coordinator : shutdown()
+Coordinator -> Node1 : shutdown signal (optional)
+Coordinator -> Node2 : shutdown signal (optional)
+Node1 -> Node1 : shutdown()
+deactivate Node1
+Node2 -> Node2 : shutdown()
+deactivate Node2
+Coordinator -> Coordinator : cleanup resources
+deactivate Coordinator
+
+@enduml

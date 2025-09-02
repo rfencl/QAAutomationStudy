@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="DistributedTestExecutionSuite" parallel="false" thread-count="1">
+    <test name="DistributedExecutionDemo">
+        <classes>
+            <class name="com.qa.tests.DistributedExecutionDemo"/>
+        </classes>
+    </test>
+</suite>
