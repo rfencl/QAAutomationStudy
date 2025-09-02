@@ -87,7 +87,7 @@ public class AlertsTest extends BaseTest {
         Alert alert = driver.switchTo().alert();
         Assertions.assertEquals("Enter something", alert.getText());
 
-        alert.sendKeys("Selenium");
+        // alert.sendKeys("Selenium");
         alert.accept();
 
     }

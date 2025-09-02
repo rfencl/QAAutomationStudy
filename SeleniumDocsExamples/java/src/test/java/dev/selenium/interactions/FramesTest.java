@@ -45,7 +45,9 @@ public class FramesTest{
          emailE.sendKeys("admin@selenium.dev");
          emailE.clear();
          driver.switchTo().defaultContent();
-       
+          
+         System.out.println(driver.getTitle());
+         System.out.println(driver.getCurrentUrl());
          
          //switch To IFrame using name or id
          WebElement iframe1=driver.findElement(By.name("iframe1-name"));
@@ -63,9 +65,17 @@ public class FramesTest{
          driver.switchTo().frame(0);
          assertEquals(true, driver.getPageSource().contains("We Leave From Here"));
          
+         System.out.println(driver.getTitle());
+         System.out.println(driver.getCurrentUrl());
+         
+
+
          //leave frame
          driver.switchTo().defaultContent();
          assertEquals(true, driver.getPageSource().contains("This page has iframes"));
+
+         System.out.println(driver.getTitle());
+         System.out.println(driver.getCurrentUrl());
          
          //quit the browser
          driver.quit();

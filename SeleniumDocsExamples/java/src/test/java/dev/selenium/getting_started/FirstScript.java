@@ -1,31 +1,40 @@
-package dev.selenium.getting_started;
+package dev.selenium.getting_started; // Define package namespace
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.By; // Import locator strategies
+import org.openqa.selenium.WebDriver; // Import WebDriver interface
+import org.openqa.selenium.WebElement; // Import WebElement interface
+import org.openqa.selenium.chrome.ChromeDriver; // Import Chrome browser driver
 
-import java.time.Duration;
+import java.time.Duration; // Import Duration class for timeouts
 
+/**
+ * https://www.selenium.dev/documentation/webdriver/getting_started/first_script/
+ */
 public class FirstScript {
-    public static void main(String[] args) {
-        WebDriver driver = new ChromeDriver();
+    public static void main(String[] args) { // Main method entry point
+        // Start the session
+        WebDriver driver = new ChromeDriver(); // Create new Chrome browser instance
 
-        driver.get("https://www.selenium.dev/selenium/web/web-form.html");
+        // Take action on browser
+        driver.get("https://www.selenium.dev/selenium/web/web-form.html"); // Navigate to test page
 
-        driver.getTitle();
+        String title = driver.getTitle(); // Get page title
+        System.out.println("Page title: " + title);
 
-        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500));
+        System.out.println("Current URL: " + driver.getCurrentUrl());
 
-        WebElement textBox = driver.findElement(By.name("my-text"));
-        WebElement submitButton = driver.findElement(By.cssSelector("button"));
+        driver.manage().timeouts().implicitlyWait(Duration.ofMillis(500)); // Set implicit wait timeout
 
-        textBox.sendKeys("Selenium");
-        submitButton.click();
+        WebElement textBox = driver.findElement(By.name("my-text")); // Find text input by name attribute
+        WebElement submitButton = driver.findElement(By.cssSelector("button")); // Find submit button by CSS selector
 
-        WebElement message = driver.findElement(By.id("message"));
-        message.getText();
+        textBox.sendKeys("Selenium"); // Type "Selenium" into text box
+        submitButton.click(); // Click the submit button
 
-        driver.quit();
+        WebElement message = driver.findElement(By.id("message")); // Find success message by ID
+        String messageText = message.getText(); // Get message text
+        System.out.println("Success message: " + messageText);
+
+        driver.quit(); // Close browser and end session
     }
 }

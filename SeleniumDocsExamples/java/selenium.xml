@@ -2,9 +2,9 @@
 <!DOCTYPE log SYSTEM "logger.dtd">
 <log>
 <record>
-  <date>2025-09-02T01:46:49.880070Z</date>
-  <millis>1756777609880</millis>
-  <nanos>70000</nanos>
+  <date>2025-09-02T23:35:57.899862700Z</date>
+  <millis>1756856157899</millis>
+  <nanos>862700</nanos>
   <sequence>0</sequence>
   <logger>dev.selenium.troubleshooting.LoggingTest</logger>
   <level>WARNING</level>
@@ -14,9 +14,9 @@
   <message>this is a warning</message>
 </record>
 <record>
-  <date>2025-09-02T01:46:49.890304500Z</date>
-  <millis>1756777609890</millis>
-  <nanos>304500</nanos>
+  <date>2025-09-02T23:35:57.911752700Z</date>
+  <millis>1756856157911</millis>
+  <nanos>752700</nanos>
   <sequence>1</sequence>
   <logger>dev.selenium.troubleshooting.LoggingTest</logger>
   <level>INFO</level>
@@ -26,9 +26,9 @@
   <message>this is useful information</message>
 </record>
 <record>
-  <date>2025-09-02T01:46:49.904381600Z</date>
-  <millis>1756777609904</millis>
-  <nanos>381600</nanos>
+  <date>2025-09-02T23:35:57.913270500Z</date>
+  <millis>1756856157913</millis>
+  <nanos>270500</nanos>
   <sequence>2</sequence>
   <logger>dev.selenium.troubleshooting.LoggingTest</logger>
   <level>FINE</level>
@@ -36,4 +36,16 @@
   <method>logging</method>
   <thread>44</thread>
   <message>this is detailed debug information</message>
+</record>
+<record>
+  <date>2025-09-02T23:37:46.539501800Z</date>
+  <millis>1756856266539</millis>
+  <nanos>501800</nanos>
+  <sequence>865</sequence>
+  <logger>org.openqa.selenium.devtools.CdpVersionFinder</logger>
+  <level>WARNING</level>
+  <class>org.openqa.selenium.devtools.CdpVersionFinder</class>
+  <method>findNearestMatch</method>
+  <thread>44</thread>
+  <message>Unable to find an exact match for CDP version 140, returning the closest version; found: 139; Please update to a Selenium version that supports CDP version 140</message>
 </record>

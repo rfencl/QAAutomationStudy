@@ -5,3 +5,5 @@ database-workspace/.idea
 selenium-advanced/allure-results/
 selenium-advanced/allure-report/
 /SeleniumDocsExamples/java/bin
+SeleniumDocsExamples/java/.gradle
+SeleniumDocsExamples/java/build

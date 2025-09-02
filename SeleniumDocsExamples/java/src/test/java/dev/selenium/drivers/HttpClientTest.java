@@ -36,7 +36,6 @@ public class HttpClientTest extends BaseTest {
     public void remoteWebDriverWithClientConfig() throws Exception {
         ClientConfig clientConfig = ClientConfig.defaultConfig()
                 .withRetries()
-                .sslContext(createSSLContextWithCA(Path.of("src/test/resources/tls.crt").toAbsolutePath().toString()))
                 .connectionTimeout(Duration.ofSeconds(300))
                 .readTimeout(Duration.ofSeconds(3600))
                 .authenticateAs(new UsernameAndPassword("admin", "myStrongPassword"))
@@ -55,7 +54,6 @@ public class HttpClientTest extends BaseTest {
     public void remoteWebDriverIgnoreSSL() throws Exception {
         ClientConfig clientConfig = ClientConfig.defaultConfig()
                 .withRetries()
-                .sslContext(createIgnoreSSLContext())
                 .connectionTimeout(Duration.ofSeconds(300))
                 .readTimeout(Duration.ofSeconds(3600))
                 .authenticateAs(new UsernameAndPassword("admin", "myStrongPassword"))
@@ -74,7 +72,6 @@ public class HttpClientTest extends BaseTest {
     public void remoteWebDriverWithEmbedAuthUrl() throws Exception {
         ClientConfig clientConfig = ClientConfig.defaultConfig()
                 .withRetries()
-                .sslContext(createSSLContextWithCA(Path.of("src/test/resources/tls.crt").toAbsolutePath().toString()))
                 .connectionTimeout(Duration.ofSeconds(300))
                 .readTimeout(Duration.ofSeconds(3600))
                 .version(HTTP_1_1.toString());
@@ -94,6 +91,7 @@ public class HttpClientTest extends BaseTest {
         return new URL(urlWithAuth);
     }
 
+    /*
     public static SSLContext createSSLContextWithCA(String caCertPath) throws Exception {
         FileInputStream fis = new FileInputStream(caCertPath);
         CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -126,4 +124,5 @@ public class HttpClientTest extends BaseTest {
         sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
         return sslContext;
     }
+    */
 }

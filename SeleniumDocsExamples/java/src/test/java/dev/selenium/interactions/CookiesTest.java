@@ -26,14 +26,15 @@ import java.util.Set;
 
 public class CookiesTest {
 
-	WebDriver driver = new ChromeDriver();
-	@Test
-	  public void addCookie() {
-	      driver.get("https://www.selenium.dev/selenium/web/blank.html");
-	      // Add cookie into current browser context
-	      driver.manage().addCookie(new Cookie("key", "value"));
-	      driver.quit();
-	}
+	    WebDriver driver = new ChromeDriver();
+		@Test
+		public void addCookie() {
+			driver.get("https://www.selenium.dev/selenium/web/blank.html");
+			// Add cookie into current browser context
+			driver.manage().addCookie(new Cookie("key", "value"));
+			driver.quit();
+		}
+
 	    @Test
 	    public void getNamedCookie() {
 

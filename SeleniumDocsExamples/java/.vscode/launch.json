@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "HelloSelenium",
+            "request": "launch",
+            "mainClass": "dev.selenium.hello.HelloSelenium",
+            "projectName": "java"
+        },
+        {
+            "type": "java",
             "name": "FirstScript",
             "request": "launch",
             "mainClass": "dev.selenium.getting_started.FirstScript",
@@ -14,7 +21,9 @@
             "request": "launch",
             "mainClass": "dev.selenium.getting_started.FirstScript",
             "projectName": "selenium-examples",
-            "classPaths": ["target/test-classes"],
+            "classPaths": [
+                "target/test-classes"
+            ],
             "modulePaths": []
         },
         {
