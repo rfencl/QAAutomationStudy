@@ -1,0 +1,136 @@
+@startuml MicroservicesTestingClassDiagram
+
+!define RECTANGLE class
+
+package "Models" {
+    class User {
+        -String id
+        -String username
+        -String email
+        -String status
+        +User()
+        +User(id, username, email, status)
+        +getId(): String
+        +setId(id: String): void
+        +getUsername(): String
+        +setUsername(username: String): void
+        +getEmail(): String
+        +setEmail(email: String): void
+        +getStatus(): String
+        +setStatus(status: String): void
+        +toString(): String
+    }
+    
+    class Order {
+        -String orderId
+        -String userId
+        -List<OrderItem> items
+        -BigDecimal totalAmount
+        -String status
+        -LocalDateTime createdAt
+        +Order()
+        +Order(orderId, userId, items, totalAmount, status, createdAt)
+        +getOrderId(): String
+        +setOrderId(orderId: String): void
+        +getUserId(): String
+        +setUserId(userId: String): void
+        +getItems(): List<OrderItem>
+        +setItems(items: List<OrderItem>): void
+        +getTotalAmount(): BigDecimal
+        +setTotalAmount(totalAmount: BigDecimal): void
+        +getStatus(): String
+        +setStatus(status: String): void
+        +getCreatedAt(): LocalDateTime
+        +setCreatedAt(createdAt: LocalDateTime): void
+        +toString(): String
+    }
+    
+    class OrderItem {
+        -String productId
+        -int quantity
+        -BigDecimal price
+        +OrderItem()
+        +OrderItem(productId, quantity, price)
+        +getProductId(): String
+        +setProductId(productId: String): void
+        +getQuantity(): int
+        +setQuantity(quantity: int): void
+        +getPrice(): BigDecimal
+        +setPrice(price: BigDecimal): void
+    }
+}
+
+package "Service Clients" {
+    class UserServiceClient {
+        -String baseUrl
+        +UserServiceClient(baseUrl: String)
+        +getUserById(userId: String): User
+        +createUser(user: User): User
+        +updateUserStatus(userId: String, status: String): User
+        +isServiceHealthy(): boolean
+    }
+    
+    class OrderServiceClient {
+        -String baseUrl
+        +OrderServiceClient(baseUrl: String)
+        +createOrder(order: Order): Order
+        +getOrderById(orderId: String): Order
+        +updateOrderStatus(orderId: String, status: String): Order
+        +isServiceHealthy(): boolean
+    }
+}
+
+package "Testing Framework" {
+    abstract class ContractTestBase {
+        #Logger logger
+        +{abstract} validateContract(serviceUrl: String, contractDefinition: String): boolean
+        +{abstract} generateContract(serviceName: String, version: String): String
+        +compareContracts(oldContract: String, newContract: String): boolean
+        #validateResponseSchema(response: String, expectedSchema: String): boolean
+        #logValidationResult(serviceName: String, isValid: boolean, details: String): void
+    }
+    
+    class EndToEndTestOrchestrator {
+        -Logger logger
+        -UserServiceClient userServiceClient
+        -OrderServiceClient orderServiceClient
+        +EndToEndTestOrchestrator(userServiceClient: UserServiceClient, orderServiceClient: OrderServiceClient)
+        +executeOrderWorkflowTest(testUser: User, testOrder: Order): boolean
+        +testServiceResilience(): boolean
+        +testCrossServicePerformance(): boolean
+        -verifyOrderStatusProgression(orderId: String): boolean
+    }
+    
+    class ServiceVirtualization {
+        -Logger logger
+        -WireMockServer userServiceMock
+        -WireMockServer orderServiceMock
+        +startServices(): void
+        +stopServices(): void
+        +resetStubs(): void
+        -setupUserServiceStubs(): void
+        -setupOrderServiceStubs(): void
+    }
+}
+
+' Relationships
+Order *-- OrderItem : contains
+EndToEndTestOrchestrator --> UserServiceClient : uses
+EndToEndTestOrchestrator --> OrderServiceClient : uses
+UserServiceClient ..> User : creates/returns
+OrderServiceClient ..> Order : creates/returns
+
+' Notes explaining design decisions
+note right of User : "Simple POJO with Jackson annotations\nfor JSON serialization.\nRepresents service contract."
+
+note right of Order : "Complex business entity with\nrelationships to other services.\nDemonstrates cross-service dependencies."
+
+note right of UserServiceClient : "Encapsulates REST API calls with\nproper error handling and response parsing.\nAbstraction allows for easy mocking."
+
+note right of ContractTestBase : "Foundation for consumer-driven\ncontract testing. Ensures API\ncompatibility between services."
+
+note right of EndToEndTestOrchestrator : "Coordinates complex business workflows\nthat span multiple services.\nValidates entire system behavior."
+
+note right of ServiceVirtualization : "Provides controlled, predictable responses\nfor dependent services using WireMock.\nEnables testing of edge cases and errors."
+
+@enduml

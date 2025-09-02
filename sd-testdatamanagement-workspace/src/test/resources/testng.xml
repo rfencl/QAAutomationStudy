@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="TestDataManagementSuite" parallel="methods" thread-count="3">
+    <test name="TestDataManagementTests">
+        <classes>
+            <class name="com.qa.testdata.TestDataManagerTest"/>
+            <class name="com.qa.testdata.IntegrationTest"/>
+        </classes>
+    </test>
+</suite>

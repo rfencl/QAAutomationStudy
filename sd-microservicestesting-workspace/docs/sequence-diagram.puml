@@ -1,0 +1,128 @@
+@startuml MicroservicesTestingSequenceDiagram
+
+title End-to-End Microservices Testing Flow
+
+actor "Test Runner" as TR
+participant "EndToEndTestOrchestrator" as ETO
+participant "ServiceVirtualization" as SV
+participant "UserServiceClient" as USC
+participant "OrderServiceClient" as OSC
+participant "WireMock User Service" as WUS
+participant "WireMock Order Service" as WOS
+participant "ContractTestBase" as CTB
+
+== Test Setup Phase ==
+TR -> SV : startServices()
+activate SV
+SV -> WUS : start on port 8081
+SV -> WOS : start on port 8082
+SV -> SV : setupUserServiceStubs()
+SV -> SV : setupOrderServiceStubs()
+SV --> TR : services started
+deactivate SV
+
+== Contract Testing Phase ==
+TR -> CTB : validateContract(serviceUrl, contractDefinition)
+activate CTB
+CTB -> WUS : GET /users/user-123
+WUS --> CTB : 200 OK + User JSON
+CTB -> CTB : validateResponseSchema()
+CTB --> TR : contract validation result
+deactivate CTB
+
+== End-to-End Workflow Testing ==
+TR -> ETO : executeOrderWorkflowTest(testUser, testOrder)
+activate ETO
+
+' Health Check Phase
+ETO -> USC : isServiceHealthy()
+USC -> WUS : GET /health
+WUS --> USC : 200 OK {"status": "UP"}
+USC --> ETO : true
+
+ETO -> OSC : isServiceHealthy()
+OSC -> WOS : GET /health
+WOS --> OSC : 200 OK {"status": "UP"}
+OSC --> ETO : true
+
+' User Creation Phase
+ETO -> USC : createUser(testUser)
+USC -> WUS : POST /users
+WUS --> USC : 201 Created + User JSON
+USC --> ETO : createdUser
+
+' Order Creation Phase
+ETO -> OSC : createOrder(testOrder)
+OSC -> WOS : POST /orders
+WOS --> OSC : 201 Created + Order JSON
+OSC --> ETO : createdOrder
+
+' Order Status Verification Phase
+ETO -> ETO : verifyOrderStatusProgression(orderId)
+activate ETO
+ETO -> OSC : getOrderById(orderId)
+OSC -> WOS : GET /orders/{orderId}
+WOS --> OSC : 200 OK + Order JSON (PENDING)
+OSC --> ETO : order with PENDING status
+
+ETO -> OSC : updateOrderStatus(orderId, "CONFIRMED")
+OSC -> WOS : PATCH /orders/{orderId}/status
+WOS --> OSC : 200 OK + Order JSON (CONFIRMED)
+OSC --> ETO : order with CONFIRMED status
+deactivate ETO
+
+ETO --> TR : workflow test result (true/false)
+deactivate ETO
+
+== Resilience Testing Phase ==
+TR -> ETO : testServiceResilience()
+activate ETO
+
+' Test Non-existent User
+ETO -> USC : getUserById("user-404")
+USC -> WUS : GET /users/user-404
+WUS --> USC : 404 Not Found
+USC --> ETO : null
+
+' Test Error Scenario
+ETO -> USC : getUserById("user-error")
+USC -> WUS : GET /users/user-error
+WUS --> USC : 500 Internal Server Error
+USC --> ETO : RuntimeException
+ETO --> TR : resilience test result
+deactivate ETO
+
+== Performance Testing Phase ==
+TR -> ETO : testCrossServicePerformance()
+activate ETO
+
+par Parallel Health Checks
+    ETO -> USC : isServiceHealthy()
+    USC -> WUS : GET /health
+    WUS --> USC : 200 OK
+    USC --> ETO : true
+and
+    ETO -> OSC : isServiceHealthy()
+    OSC -> WOS : GET /health
+    WOS --> OSC : 200 OK
+    OSC --> ETO : true
+end
+
+ETO --> TR : performance test result
+deactivate ETO
+
+== Cleanup Phase ==
+TR -> SV : stopServices()
+activate SV
+SV -> WUS : stop()
+SV -> WOS : stop()
+SV --> TR : services stopped
+deactivate SV
+
+note over TR, CTB : "This sequence demonstrates:\n1. Service virtualization setup\n2. Contract validation\n3. End-to-end workflow testing\n4. Resilience testing\n5. Performance testing\n6. Proper cleanup"
+
+note over USC, OSC : "Service clients provide abstraction\nover HTTP calls and handle\nerror scenarios gracefully"
+
+note over WUS, WOS : "WireMock provides predictable\nresponses for testing various\nscenarios including errors"
+
+@enduml

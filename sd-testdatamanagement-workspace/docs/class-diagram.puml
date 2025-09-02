@@ -1,0 +1,234 @@
+@startuml TestDataManagement-ClassDiagram
+
+!define RECTANGLE class
+
+package "Core" {
+    RECTANGLE TestDataManager {
+        -generationService: DataGenerationService
+        -provisioningService: ProvisioningService
+        -isolationManager: IsolationManager
+        -versionManager: VersionManager
+        -cleanupService: CleanupService
+        +generateAndProvision(request): TestDataSet
+        +generateAndProvisionAsync(request): CompletableFuture<TestDataSet>
+        +getEntity(namespace, type, id): TestEntity
+        +cleanup(namespace): void
+        +createVersion(dataSetId, type, changeLog): TestDataSet
+    }
+    
+    RECTANGLE DataGenerationRequest {
+        -templateId: String
+        -version: String
+        -environment: String
+        -testExecutionId: String
+        -namespace: String
+        -parameters: Map<String, Object>
+        -createdBy: String
+    }
+}
+
+package "Models" {
+    RECTANGLE TestDataSet {
+        -id: String
+        -templateId: String
+        -version: String
+        -parentVersion: String
+        -environment: String
+        -namespace: String
+        -entities: Map<String, List<TestEntity>>
+        -createdAt: Instant
+        -createdBy: String
+        -changeLog: String
+        -status: DataSetStatus
+        +getTotalEntityCount(): int
+        +getEntitiesByType(type): List<TestEntity>
+    }
+    
+    RECTANGLE TestEntity {
+        -id: String
+        -type: String
+        -namespace: String
+        -attributes: Map<String, Object>
+        -createdAt: Instant
+        +getAttribute(key): T
+        +getStringAttribute(key): String
+    }
+    
+    RECTANGLE DataTemplate {
+        -id: String
+        -name: String
+        -description: String
+        -version: String
+        -entityTemplates: List<EntityTemplate>
+        -relationships: List<RelationshipDefinition>
+        -globalParameters: Map<String, Object>
+    }
+    
+    RECTANGLE EntityTemplate {
+        -entityType: String
+        -count: int
+        -fieldTemplates: Map<String, Object>
+        -constraints: Map<String, Object>
+    }
+    
+    enum DataSetStatus {
+        GENERATING
+        READY
+        PROVISIONING
+        PROVISIONED
+        FAILED
+        CLEANING_UP
+        CLEANED
+    }
+}
+
+package "Generation" {
+    RECTANGLE DataGenerationService {
+        -templateEngine: TemplateEngine
+        -generatorFactory: DataGeneratorFactory
+        -relationshipManager: RelationshipManager
+        +generateDataSet(request): TestDataSet
+        -generateEntities(template, request): List<TestEntity>
+        -orderByDependencies(templates): List<EntityTemplate>
+    }
+    
+    interface DataGenerator {
+        +generate(template, namespace): TestEntity
+        +getEntityType(): String
+    }
+    
+    RECTANGLE DataGeneratorFactory {
+        -generators: Map<String, DataGenerator>
+        +getGenerator(entityType): DataGenerator
+        +registerGenerator(generator): void
+    }
+    
+    RECTANGLE TemplateEngine {
+        -templates: Map<String, DataTemplate>
+        +loadTemplate(templateId): DataTemplate
+        +registerTemplate(template): void
+    }
+    
+    RECTANGLE RelationshipManager {
+        +establishRelationships(dataSet, relationships): void
+        -establishRelationship(dataSet, relationship): void
+    }
+    
+    RECTANGLE UserDataGenerator {
+        -faker: Faker
+        +generate(template, namespace): TestEntity
+        +getEntityType(): String
+    }
+    
+    RECTANGLE OrderDataGenerator {
+        -faker: Faker
+        +generate(template, namespace): TestEntity
+        +getEntityType(): String
+    }
+    
+    RECTANGLE ProductDataGenerator {
+        -faker: Faker
+        +generate(template, namespace): TestEntity
+        +getEntityType(): String
+    }
+}
+
+package "Provisioning" {
+    RECTANGLE ProvisioningService {
+        -provisioners: Map<String, DataProvisioner>
+        -repository: ProvisioningRepository
+        +provisionDataSet(dataSet, environment): void
+        +getEntity(namespace, type, id): TestEntity
+        +getEntitiesByType(namespace, type): List<TestEntity>
+    }
+    
+    interface DataProvisioner {
+        +provision(entities, environment): void
+        +getProvisionerType(): String
+    }
+    
+    RECTANGLE DatabaseProvisioner {
+        -dataSources: Map<String, DataSource>
+        +provision(entities, environment): void
+        -insertEntity(connection, tableName, entity): void
+    }
+    
+    RECTANGLE ProvisioningRepository {
+        -storage: Map<String, Map<String, List<TestEntity>>>
+        +storeEntities(namespace, type, entities): void
+        +getEntity(namespace, type, id): TestEntity
+        +getEntitiesByType(namespace, type): List<TestEntity>
+        +clearNamespace(namespace): void
+    }
+}
+
+package "Isolation" {
+    RECTANGLE IsolationManager {
+        -testExecutionToNamespace: ConcurrentMap<String, String>
+        -namespaceCreationTime: ConcurrentMap<String, Long>
+        +createNamespace(testExecutionId): String
+        +getNamespace(testExecutionId): String
+        +releaseNamespace(testExecutionId): void
+        +isNamespaceExpired(namespace, maxAge): boolean
+    }
+}
+
+package "Cleanup" {
+    RECTANGLE CleanupService {
+        -repository: ProvisioningRepository
+        -cleaners: List<DataCleaner>
+        -cleanupExecutor: ExecutorService
+        +cleanupNamespace(namespace): void
+        +cleanupNamespaceAsync(namespace): CompletableFuture<Void>
+        +cleanupExpiredNamespaces(maxAge): void
+    }
+    
+    interface DataCleaner {
+        +cleanup(namespace): void
+        +getCleanerType(): String
+    }
+    
+    RECTANGLE DatabaseCleaner {
+        -dataSources: Map<String, DataSource>
+        -tableNames: List<String>
+        +cleanup(namespace): void
+    }
+}
+
+package "Versioning" {
+    RECTANGLE VersionManager {
+        -dataSetVersions: ConcurrentMap<String, TestDataSet>
+        +createVersion(dataSetId, versionType, changeLog): TestDataSet
+        +getVersion(dataSetId, version): TestDataSet
+        -generateNewVersion(currentVersion, versionType): String
+    }
+}
+
+' Relationships
+TestDataManager --> DataGenerationService
+TestDataManager --> ProvisioningService
+TestDataManager --> IsolationManager
+TestDataManager --> VersionManager
+TestDataManager --> CleanupService
+
+DataGenerationService --> TemplateEngine
+DataGenerationService --> DataGeneratorFactory
+DataGenerationService --> RelationshipManager
+
+DataGeneratorFactory --> DataGenerator
+UserDataGenerator ..|> DataGenerator
+OrderDataGenerator ..|> DataGenerator
+ProductDataGenerator ..|> DataGenerator
+
+ProvisioningService --> DataProvisioner
+ProvisioningService --> ProvisioningRepository
+DatabaseProvisioner ..|> DataProvisioner
+
+CleanupService --> DataCleaner
+DatabaseCleaner ..|> DataCleaner
+
+TestDataSet --> TestEntity
+TestDataSet --> DataSetStatus
+DataTemplate --> EntityTemplate
+
+@enduml

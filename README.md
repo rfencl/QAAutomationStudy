@@ -2,6 +2,34 @@
 
 This repository contains comprehensive workspaces for advanced QA automation learning, covering all the key areas mentioned in your study plan. Each workspace includes practical exercises, real-world examples, and hands-on implementations.
 
+### 17. SD Microservices Testing Workspace (`sd-microservicestesting-workspace/`)
+**Focus**: Comprehensive microservices testing framework with contract testing, service virtualization, and end-to-end testing
+
+**Key Topics Covered**:
+- Service virtualization using WireMock for isolated testing
+- Contract testing implementation for API compatibility
+- End-to-end test orchestration across multiple services
+- Service client abstraction with proper error handling
+- Cross-service performance and resilience testing
+- Mock service setup with various test scenarios
+
+**Exercises Implemented**:
+- ✅ **ServiceVirtualization** - WireMock-based service mocking with comprehensive scenarios
+- ✅ **ContractTestBase** - Foundation for consumer-driven contract testing
+- ✅ **EndToEndTestOrchestrator** - Coordinates complex business workflows
+- ✅ **Service Clients** - UserServiceClient and OrderServiceClient with error handling
+- ✅ **Domain Models** - User and Order entities with JSON serialization
+- ✅ **Comprehensive Testing** - Service virtualization, contract, and end-to-end tests
+- ✅ **PlantUML Diagrams** - Class and sequence diagrams for architecture documentation
+
+**Key Features**:
+- WireMock service virtualization with predictable responses
+- Contract validation for API compatibility testing
+- End-to-end workflow orchestration and validation
+- Service resilience and performance testing
+- Cross-browser and cross-service testing capabilities
+- Production-ready error handling and logging
+
 ### 16. PageObjectFactory Workspace (`pageobjectfactory-workspace/`)
 **Focus**: Factory pattern implementation for efficient page object creation and management
 

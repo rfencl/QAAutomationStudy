@@ -1,0 +1,112 @@
+@startuml TestDataManagement-SequenceDiagram
+
+title Test Data Generation and Provisioning Flow
+
+actor TestAutomation as "Test Automation"
+participant TestDataManager as "TestDataManager"
+participant IsolationManager as "IsolationManager"
+participant DataGenerationService as "DataGenerationService"
+participant TemplateEngine as "TemplateEngine"
+participant DataGeneratorFactory as "DataGeneratorFactory"
+participant UserDataGenerator as "UserDataGenerator"
+participant RelationshipManager as "RelationshipManager"
+participant ProvisioningService as "ProvisioningService"
+participant ProvisioningRepository as "ProvisioningRepository"
+participant CleanupService as "CleanupService"
+
+== Test Data Generation and Provisioning ==
+
+TestAutomation -> TestDataManager: generateAndProvision(request)
+activate TestDataManager
+
+TestDataManager -> IsolationManager: createNamespace(testExecutionId)
+activate IsolationManager
+IsolationManager -> IsolationManager: generateNamespace()
+IsolationManager --> TestDataManager: namespace
+deactivate IsolationManager
+
+TestDataManager -> DataGenerationService: generateDataSet(request)
+activate DataGenerationService
+
+DataGenerationService -> TemplateEngine: loadTemplate(templateId)
+activate TemplateEngine
+TemplateEngine --> DataGenerationService: DataTemplate
+deactivate TemplateEngine
+
+loop for each EntityTemplate
+    DataGenerationService -> DataGeneratorFactory: getGenerator(entityType)
+    activate DataGeneratorFactory
+    DataGeneratorFactory --> DataGenerationService: DataGenerator
+    deactivate DataGeneratorFactory
+    
+    loop for entity count
+        DataGenerationService -> UserDataGenerator: generate(template, namespace)
+        activate UserDataGenerator
+        UserDataGenerator -> UserDataGenerator: generateUserData()
+        UserDataGenerator --> DataGenerationService: TestEntity
+        deactivate UserDataGenerator
+    end
+end
+
+DataGenerationService -> RelationshipManager: establishRelationships(dataSet, relationships)
+activate RelationshipManager
+RelationshipManager -> RelationshipManager: establishManyToOneRelationship()
+RelationshipManager --> DataGenerationService: void
+deactivate RelationshipManager
+
+DataGenerationService --> TestDataManager: TestDataSet
+deactivate DataGenerationService
+
+TestDataManager -> ProvisioningService: provisionDataSet(dataSet, environment)
+activate ProvisioningService
+
+loop for each entity type
+    ProvisioningService -> ProvisioningRepository: storeEntities(namespace, entityType, entities)
+    activate ProvisioningRepository
+    ProvisioningRepository --> ProvisioningService: void
+    deactivate ProvisioningRepository
+end
+
+ProvisioningService --> TestDataManager: void
+deactivate ProvisioningService
+
+TestDataManager --> TestAutomation: TestDataSet
+deactivate TestDataManager
+
+== Test Execution ==
+
+TestAutomation -> TestDataManager: getEntity(namespace, entityType, entityId)
+activate TestDataManager
+TestDataManager -> ProvisioningService: getEntity(namespace, entityType, entityId)
+activate ProvisioningService
+ProvisioningService -> ProvisioningRepository: getEntity(namespace, entityType, entityId)
+activate ProvisioningRepository
+ProvisioningRepository --> ProvisioningService: TestEntity
+deactivate ProvisioningRepository
+ProvisioningService --> TestDataManager: TestEntity
+deactivate ProvisioningService
+TestDataManager --> TestAutomation: TestEntity
+deactivate TestDataManager
+
+TestAutomation -> TestAutomation: executeTestLogic()
+
+== Test Cleanup ==
+
+TestAutomation -> TestDataManager: cleanup(namespace)
+activate TestDataManager
+
+TestDataManager -> CleanupService: cleanupNamespace(namespace)
+activate CleanupService
+
+CleanupService -> ProvisioningRepository: clearNamespace(namespace)
+activate ProvisioningRepository
+ProvisioningRepository --> CleanupService: void
+deactivate ProvisioningRepository
+
+CleanupService --> TestDataManager: void
+deactivate CleanupService
+
+TestDataManager --> TestAutomation: void
+deactivate TestDataManager
+
+@enduml

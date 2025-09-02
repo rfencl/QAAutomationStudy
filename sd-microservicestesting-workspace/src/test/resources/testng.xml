@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="MicroservicesTestingSuite" parallel="false" thread-count="1">
+    
+    <test name="ServiceVirtualizationTests">
+        <classes>
+            <class name="com.qa.microservices.tests.ServiceVirtualizationTest"/>
+        </classes>
+    </test>
+    
+    <test name="ContractTests">
+        <classes>
+            <class name="com.qa.microservices.tests.ContractTest"/>
+        </classes>
+    </test>
+    
+    <test name="EndToEndTests">
+        <classes>
+            <class name="com.qa.microservices.tests.EndToEndTest"/>
+        </classes>
+    </test>
+    
+</suite>
