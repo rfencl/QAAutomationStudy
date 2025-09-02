@@ -1,0 +1,190 @@
+@startuml Environment Provisioning Class Diagram
+
+!define RECTANGLE class
+
+package "API Layer" {
+    class EnvironmentProvisioningController {
+        -provisioningOrchestrator: EnvironmentProvisioningOrchestrator
+        -lifecycleManager: LifecycleManager
+        +provisionEnvironment(request: ProvisioningRequest): ProvisioningResponse
+        +getEnvironmentStatus(environmentId: String): EnvironmentStatus
+        +cleanupEnvironment(environmentId: String): void
+    }
+
+    package "DTO" {
+        class ProvisioningResponse {
+            -environmentId: String
+            -status: EnvironmentStatus
+            -endpoints: Map<String, String>
+            -estimatedReadyTime: Duration
+        }
+    }
+}
+
+package "Core" {
+    class EnvironmentProvisioningOrchestrator {
+        -templateManager: TemplateManager
+        -infrastructureManager: InfrastructureManager
+        -databaseManager: DatabaseManager
+        -applicationManager: ApplicationDeploymentManager
+        -configurationManager: ConfigurationManager
+        -lifecycleManager: LifecycleManager
+        +provisionEnvironment(request: ProvisioningRequest): ProvisioningResult
+        -executeProvisioningPlan(plan: ProvisioningPlan, environmentId: String): EnvironmentInstance
+        -createProvisioningPlan(template: EnvironmentTemplate, request: ProvisioningRequest): ProvisioningPlan
+        -performHealthChecks(applications: List<ApplicationInstance>, databases: List<DatabaseInstance>): void
+        -cleanupFailedProvisioning(environmentId: String): void
+        -generateEnvironmentId(): String
+    }
+}
+
+package "Service Layer" {
+    class TemplateManager {
+        -templateCache: Map<String, EnvironmentTemplate>
+        -templateValidator: TemplateValidator
+        +loadTemplate(templateId: String): EnvironmentTemplate
+        +registerTemplate(template: EnvironmentTemplate): void
+        +initializeSampleTemplates(): void
+        -createMicroservicesTemplate(): EnvironmentTemplate
+        -createWebAppTemplate(): EnvironmentTemplate
+    }
+
+    class TemplateValidator {
+        +validate(template: EnvironmentTemplate): void
+        -validateBasicFields(template: EnvironmentTemplate): void
+        -validateInfrastructureSpec(template: EnvironmentTemplate): void
+        -validateApplicationSpecs(template: EnvironmentTemplate): void
+        -validateDatabaseSpecs(template: EnvironmentTemplate): void
+    }
+}
+
+package "Manager Layer" {
+    class InfrastructureManager {
+        -cloudProviders: Map<String, CloudProvider>
+        +provisionInfrastructure(spec: InfrastructureSpec, environmentId: String): InfrastructureResources
+        +setupNetworking(spec: NetworkSpec, environmentId: String): NetworkConfiguration
+        -getCloudProvider(providerName: String): CloudProvider
+        -createResourceGroup(environmentId: String, provider: CloudProvider): String
+        -provisionContainerizedInfrastructure(spec: InfrastructureSpec, resourceGroup: String, provider: CloudProvider): InfrastructureResources
+        -provisionVMInfrastructure(spec: InfrastructureSpec, resourceGroup: String, provider: CloudProvider): InfrastructureResources
+    }
+
+    class DatabaseManager {
+        -databaseProviders: Map<String, DatabaseProvider>
+        +provisionDatabases(specs: List<DatabaseSpec>, environmentId: String): List<DatabaseInstance>
+        -provisionDatabase(spec: DatabaseSpec, environmentId: String): DatabaseInstance
+        -getDatabaseProvider(databaseType: String): DatabaseProvider
+        -createDatabaseInstance(spec: DatabaseSpec, environmentId: String): DatabaseInstance
+        -configureDatabaseInstance(instance: DatabaseInstance, spec: DatabaseSpec): void
+        -createDatabasesAndUsers(instance: DatabaseInstance, databases: List<DatabaseConfig>): void
+    }
+
+    class ApplicationDeploymentManager {
+        +deployApplications(specs: List<ApplicationSpec>, environmentId: String, infrastructure: InfrastructureResources): List<ApplicationInstance>
+        -deployApplication(spec: ApplicationSpec, environmentId: String, infrastructure: InfrastructureResources): ApplicationInstance
+        -deployContainerApplication(spec: ApplicationSpec, infrastructure: InfrastructureResources): ApplicationInstance
+        -deployVMApplication(spec: ApplicationSpec, infrastructure: InfrastructureResources): ApplicationInstance
+        -generateContainerEndpoints(spec: ApplicationSpec, cluster: ContainerCluster): List<String>
+        -generateVMEndpoints(spec: ApplicationSpec, instances: List<ComputeInstance>): List<String>
+        +performHealthChecks(applications: List<ApplicationInstance>): void
+    }
+
+    class ConfigurationManager {
+        -environmentConfigurations: Map<String, Map<String, Object>>
+        +applyConfigurations(configurations: Map<String, Object>, environmentId: String): void
+        +getConfigurations(environmentId: String): Map<String, Object>
+        -processConfigurations(configurations: Map<String, Object>, environmentId: String): Map<String, Object>
+        -substituteVariables(value: String, environmentId: String): String
+        -substituteDatabaseVariables(value: String, environmentId: String): String
+        +removeConfigurations(environmentId: String): void
+    }
+
+    class LifecycleManager {
+        -environmentRegistry: Map<String, EnvironmentInstance>
+        -scheduler: ScheduledExecutorService
+        -infrastructureManager: InfrastructureManager
+        -databaseManager: DatabaseManager
+        -applicationManager: ApplicationDeploymentManager
+        -configurationManager: ConfigurationManager
+        +registerEnvironment(environment: EnvironmentInstance): void
+        +cleanupEnvironment(environmentId: String): void
+        +getEnvironmentStatus(environmentId: String): EnvironmentStatus
+        +getEnvironment(environmentId: String): EnvironmentInstance
+        +startPeriodicCleanup(): void
+        +shutdown(): void
+        -scheduleCleanup(environmentId: String, ttlMillis: long): void
+        -cleanupExpiredEnvironments(): void
+        -stopApplications(applications: List<ApplicationInstance>): void
+        -cleanupDatabases(databases: List<DatabaseInstance>): void
+        -releaseInfrastructure(infrastructure: InfrastructureResources): void
+    }
+}
+
+package "Provider Interfaces" {
+    interface CloudProvider {
+        +getProviderName(): String
+        +createResourceGroup(name: String, region: String): String
+        +deleteResourceGroup(resourceGroupName: String): void
+        +isAvailable(): boolean
+    }
+
+    interface DatabaseProvider {
+        +getDatabaseType(): String
+        +createInstance(config: DatabaseInstanceConfig): DatabaseInstance
+        +deleteInstance(instanceId: String): void
+        +isAvailable(): boolean
+    }
+}
+
+package "Model Layer" {
+    class EnvironmentInstance << (D,orchid) >>
+    class EnvironmentTemplate << (D,orchid) >>
+    class ProvisioningRequest << (D,orchid) >>
+    class ProvisioningResult << (D,orchid) >>
+    class InfrastructureSpec << (D,orchid) >>
+    class DatabaseSpec << (D,orchid) >>
+    class ApplicationSpec << (D,orchid) >>
+    enum EnvironmentStatus
+    enum DeploymentType
+}
+
+package "Exception Layer" {
+    class ProvisioningException
+    class TemplateNotFoundException
+    class TemplateValidationException
+    class EnvironmentCleanupException
+}
+
+' Relationships
+EnvironmentProvisioningController --> EnvironmentProvisioningOrchestrator
+EnvironmentProvisioningController --> LifecycleManager
+EnvironmentProvisioningController ..> ProvisioningRequest
+EnvironmentProvisioningController ..> ProvisioningResponse
+
+EnvironmentProvisioningOrchestrator --> TemplateManager
+EnvironmentProvisioningOrchestrator --> InfrastructureManager
+EnvironmentProvisioningOrchestrator --> DatabaseManager
+EnvironmentProvisioningOrchestrator --> ApplicationDeploymentManager
+EnvironmentProvisioningOrchestrator --> ConfigurationManager
+EnvironmentProvisioningOrchestrator --> LifecycleManager
+
+TemplateManager --> TemplateValidator
+TemplateManager --> EnvironmentTemplate
+
+InfrastructureManager --> CloudProvider
+DatabaseManager --> DatabaseProvider
+
+LifecycleManager --> InfrastructureManager
+LifecycleManager --> DatabaseManager
+LifecycleManager --> ApplicationDeploymentManager
+LifecycleManager --> ConfigurationManager
+
+EnvironmentProvisioningOrchestrator ..> ProvisioningRequest
+EnvironmentProvisioningOrchestrator ..> ProvisioningResult
+EnvironmentProvisioningOrchestrator ..> EnvironmentInstance
+
+TemplateNotFoundException --|> ProvisioningException
+TemplateValidationException --|> ProvisioningException
+EnvironmentCleanupException --|> ProvisioningException
+
+@enduml

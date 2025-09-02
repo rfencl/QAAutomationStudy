@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="EnvironmentProvisioningSuite" parallel="classes" thread-count="2">
+    <test name="EnvironmentProvisioningTests">
+        <classes>
+            <class name="com.qa.automation.environment.EnvironmentProvisioningTest"/>
+            <class name="com.qa.automation.environment.EnvironmentProvisioningIntegrationTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,222 @@
+@startuml Environment Provisioning Sequence Diagram
+
+actor "Test Engineer" as User
+participant "Controller" as Controller
+participant "Orchestrator" as Orchestrator
+participant "TemplateManager" as TemplateManager
+participant "TemplateValidator" as Validator
+participant "InfrastructureManager" as InfraManager
+participant "CloudProvider" as CloudProvider
+participant "DatabaseManager" as DBManager
+participant "DatabaseProvider" as DBProvider
+participant "ApplicationManager" as AppManager
+participant "ConfigurationManager" as ConfigManager
+participant "LifecycleManager" as LifecycleManager
+
+title Environment Provisioning Sequence
+
+User -> Controller: provisionEnvironment(request)
+activate Controller
+
+Controller -> Orchestrator: provisionEnvironment(request)
+activate Orchestrator
+
+note right of Orchestrator: Generate unique environment ID
+Orchestrator -> Orchestrator: generateEnvironmentId()
+
+' Template Loading and Validation
+Orchestrator -> TemplateManager: loadTemplate(templateId)
+activate TemplateManager
+
+TemplateManager -> TemplateManager: templateCache.get(templateId)
+TemplateManager -> Validator: validate(template)
+activate Validator
+
+Validator -> Validator: validateBasicFields(template)
+Validator -> Validator: validateInfrastructureSpec(template)
+Validator -> Validator: validateApplicationSpecs(template)
+Validator -> Validator: validateDatabaseSpecs(template)
+
+Validator --> TemplateManager: validation complete
+deactivate Validator
+
+TemplateManager --> Orchestrator: EnvironmentTemplate
+deactivate TemplateManager
+
+' Create Provisioning Plan
+Orchestrator -> Orchestrator: createProvisioningPlan(template, request)
+
+' Execute Provisioning Plan
+Orchestrator -> Orchestrator: executeProvisioningPlan(plan, environmentId)
+
+' Step 1: Provision Infrastructure
+note right of Orchestrator: Sequential execution ensures dependencies
+Orchestrator -> InfraManager: provisionInfrastructure(spec, environmentId)
+activate InfraManager
+
+InfraManager -> CloudProvider: createResourceGroup(name, region)
+activate CloudProvider
+CloudProvider --> InfraManager: resourceGroupId
+deactivate CloudProvider
+
+alt containerized infrastructure
+    InfraManager -> InfraManager: provisionContainerizedInfrastructure()
+    note right of InfraManager: Create container cluster
+else VM infrastructure
+    InfraManager -> InfraManager: provisionVMInfrastructure()
+    note right of InfraManager: Create compute instances
+end
+
+InfraManager --> Orchestrator: InfrastructureResources
+deactivate InfraManager
+
+' Step 2: Setup Networking
+Orchestrator -> InfraManager: setupNetworking(networkSpec, environmentId)
+activate InfraManager
+
+InfraManager -> InfraManager: createVirtualNetwork()
+InfraManager -> InfraManager: createSubnets()
+InfraManager -> InfraManager: createSecurityGroups()
+InfraManager -> InfraManager: createLoadBalancers()
+
+InfraManager --> Orchestrator: NetworkConfiguration
+deactivate InfraManager
+
+' Step 3: Provision Databases
+Orchestrator -> DBManager: provisionDatabases(databaseSpecs, environmentId)
+activate DBManager
+
+loop for each database spec
+    DBManager -> DBProvider: createInstance(config)
+    activate DBProvider
+    
+    DBProvider -> DBProvider: createDatabaseInstance()
+    note right of DBProvider: Simulate database creation delay
+    
+    DBProvider --> DBManager: DatabaseInstance
+    deactivate DBProvider
+    
+    DBManager -> DBManager: configureDatabaseInstance()
+    DBManager -> DBManager: createDatabasesAndUsers()
+    
+    opt initial data script exists
+        DBManager -> DBManager: loadInitialData()
+    end
+end
+
+DBManager --> Orchestrator: List<DatabaseInstance>
+deactivate DBManager
+
+' Step 4: Deploy Applications
+Orchestrator -> AppManager: deployApplications(appSpecs, environmentId, infrastructure)
+activate AppManager
+
+loop for each application spec
+    alt container deployment
+        AppManager -> AppManager: deployContainerApplication()
+        AppManager -> AppManager: generateContainerEndpoints()
+    else VM deployment
+        AppManager -> AppManager: deployVMApplication()
+        AppManager -> AppManager: generateVMEndpoints()
+    end
+end
+
+AppManager --> Orchestrator: List<ApplicationInstance>
+deactivate AppManager
+
+' Step 5: Apply Configurations
+Orchestrator -> ConfigManager: applyConfigurations(configurations, environmentId)
+activate ConfigManager
+
+ConfigManager -> ConfigManager: processConfigurations()
+ConfigManager -> ConfigManager: substituteVariables()
+ConfigManager -> ConfigManager: substituteDatabaseVariables()
+
+ConfigManager --> Orchestrator: configurations applied
+deactivate ConfigManager
+
+' Step 6: Health Checks
+Orchestrator -> Orchestrator: performHealthChecks(applications, databases)
+
+' Build Environment Instance
+Orchestrator -> Orchestrator: build EnvironmentInstance
+
+' Register for Lifecycle Management
+Orchestrator -> LifecycleManager: registerEnvironment(environment)
+activate LifecycleManager
+
+LifecycleManager -> LifecycleManager: environmentRegistry.put(id, environment)
+
+opt TTL specified
+    LifecycleManager -> LifecycleManager: scheduleCleanup(environmentId, ttl)
+    note right of LifecycleManager: Schedule automatic cleanup
+end
+
+LifecycleManager --> Orchestrator: environment registered
+deactivate LifecycleManager
+
+' Return Success Result
+Orchestrator -> Orchestrator: ProvisioningResult.success()
+Orchestrator --> Controller: ProvisioningResult
+deactivate Orchestrator
+
+Controller --> User: ProvisioningResponse
+deactivate Controller
+
+' Separate sequence for cleanup
+== Environment Cleanup ==
+
+User -> Controller: cleanupEnvironment(environmentId)
+activate Controller
+Controller -> LifecycleManager: cleanupEnvironment(environmentId)
+activate LifecycleManager
+
+LifecycleManager -> LifecycleManager: environmentRegistry.get(environmentId)
+LifecycleManager -> LifecycleManager: environment.setStatus(TERMINATING)
+
+' Stop Applications
+LifecycleManager -> AppManager: stopApplications(applications)
+activate AppManager
+AppManager -> AppManager: set application status to STOPPED
+AppManager --> LifecycleManager: applications stopped
+deactivate AppManager
+
+' Cleanup Databases
+LifecycleManager -> DBManager: cleanupDatabases(databases)
+activate DBManager
+loop for each database
+    DBManager -> DBProvider: deleteInstance(instanceId)
+    activate DBProvider
+    DBProvider --> DBManager: instance deleted
+    deactivate DBProvider
+end
+DBManager --> LifecycleManager: databases cleaned up
+deactivate DBManager
+
+' Release Infrastructure
+LifecycleManager -> InfraManager: releaseInfrastructure(infrastructure)
+activate InfraManager
+InfraManager -> CloudProvider: deleteResourceGroup(resourceGroupName)
+activate CloudProvider
+CloudProvider --> InfraManager: resource group deleted
+deactivate CloudProvider
+InfraManager --> LifecycleManager: infrastructure released
+deactivate InfraManager
+
+' Remove Configurations
+LifecycleManager -> ConfigManager: removeConfigurations(environmentId)
+activate ConfigManager
+ConfigManager -> ConfigManager: environmentConfigurations.remove(environmentId)
+ConfigManager --> LifecycleManager: configurations removed
+deactivate ConfigManager
+
+' Update Final Status
+LifecycleManager -> LifecycleManager: environment.setStatus(TERMINATED)
+LifecycleManager -> LifecycleManager: environment.setEndTime(now)
+
+LifecycleManager --> Controller: cleanup completed
+deactivate LifecycleManager
+Controller --> User:
+deactivate Controller
+
+@enduml
