@@ -37,13 +37,19 @@ public class FramesTest{
          
          //switch To IFrame using Web Element
          WebElement iframe = driver.findElement(By.id("iframe1"));
+         System.out.println("The iframe's URL is: " + iframe.getAttribute("src"));
          //Switch to the frame
          driver.switchTo().frame(iframe);
          assertEquals(true, driver.getPageSource().contains("We Leave From Here"));
-         //Now we can type text into email field
+
+         WebElement login = driver.findElement(By.name("login"));
+         System.out.println("The login's URL is: " + login.getAttribute("action"));      //Now we can type text into email field
+
          WebElement emailE = driver.findElement(By.id("email"));
          emailE.sendKeys("admin@selenium.dev");
          emailE.clear();
+
+
          driver.switchTo().defaultContent();
           
          System.out.println(driver.getTitle());
@@ -59,7 +65,8 @@ public class FramesTest{
          email.sendKeys("admin@selenium.dev");
          email.clear();
          driver.switchTo().defaultContent();
-     
+         System.out.println(driver.getTitle());
+         System.out.println(driver.getCurrentUrl());
          
          //switch To IFrame using index
          driver.switchTo().frame(0);
