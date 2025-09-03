@@ -1,0 +1,10 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+        "java.test.config": {
+        "env": {
+            "SHOW_BROWSER": "true",
+            "-Dheadless": "true"
+        }
+    },
+    "java.compile.nullAnalysis.mode": "automatic"
+}
