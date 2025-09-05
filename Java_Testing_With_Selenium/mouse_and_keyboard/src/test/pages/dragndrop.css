@@ -1,0 +1,26 @@
+#drag,
+#drop {
+    float: left;
+    padding: 15px;
+    margin: 15px;
+    -moz-user-select: none;
+}
+
+#drag {
+    background-color: #A9A9A9;
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    /* Makes it clear the element is
+draggable */
+}
+
+#drop {
+    background-color: #fd8166;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: 2px dashed #000;
+    /* Visual cue for drop area */
+}

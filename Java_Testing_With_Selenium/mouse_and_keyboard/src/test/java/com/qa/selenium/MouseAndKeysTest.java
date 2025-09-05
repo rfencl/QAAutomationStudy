@@ -114,4 +114,5 @@ public class MouseAndKeysTest {
         Assert.assertEquals(driver.get().getTitle(),
                 "Downloads | Selenium");
     }
+
 }

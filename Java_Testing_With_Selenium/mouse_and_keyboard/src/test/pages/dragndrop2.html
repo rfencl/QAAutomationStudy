@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="dragndrop.css">
+    <script src="dragndrop.js" defer></script>
+</head>
+
+<body>
+    <h1>Drag and Drop</h1>
+    <center>
+        <div id="drop" ondragleave="return dragExit(event)" ondragenter="return dragEnter(event)"
+            ondrop="return dragDrop(event)" ondragover="return dragOver(event)">
+            Drop here
+        </div>
+        <div id="drag" draggable="true" ondragstart="return dragStart(event)" ondragend="return dragEnd(event)">
+            <p>Drag</p>
+        </div>
+
+        <div id="buttons">
+            <h2>Toggle Button</h1>
+                <button id="toggleButton" onclick="this.innerHTML = this.
+            innerHTML == 'On' ? 'Off' : 'On'" style="width:100px;
+            height:50px;">On</button>
+        </div>
+
+        <div id="checkboxes">
+            <h2>Checkboxes</h2><br>
+            <form>
+                <input type="checkbox" id="music" name="hobby" value="Music">
+                <label for="music">Music</label><br>
+                <input type="checkbox" id="travel" name="hobby" value="Travel">
+                <label for="travel">Travel</label><br>
+                <input type="checkbox" id="books" name="hobby" value="Books">
+                <label for="books">Books</label>
+            </form>
+        </div>
+    </center>
+</body>
+
+</html>
