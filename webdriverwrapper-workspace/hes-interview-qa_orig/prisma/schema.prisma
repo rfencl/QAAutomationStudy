@@ -1,0 +1,233 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                Int     @id @default(autoincrement())
+  // id                Int  @id @default(uuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+model User {
+  id                 Int      @id @default(autoincrement())
+  // id                 String    @id @default(uuid())
+  name               String
+  email              String   @unique
+  image              String
+  password           String
+  role               UserRole @default(USER)
+  householdId        Int?     @unique
+  isTwoFactorEnabled Boolean  @default(false)
+
+  accounts  Account[]
+  household Household? @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  Relatives Relative[]
+}
+
+enum HomeType {
+  HOUSE
+  APARTMENT
+  MOBILE_HOME
+  SHELTER
+}
+
+enum Ownership {
+  MORTGAGE
+  OWN
+  RENT
+  FREE_LIVING
+}
+
+model Lienholder {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  Household Household[]
+}
+
+enum State {
+  AL
+  AK
+  AZ
+  AR
+  CA
+  CO
+  CT
+  DE
+  DC
+  FL
+  GA
+  HI
+  ID
+  IL
+  IN
+  IA
+  KS
+  KY
+  LA
+  ME
+  MD
+  MA
+  MI
+  MN
+  MS
+  MO
+  MT
+  NE
+  NV
+  NH
+  NJ
+  NM
+  NY
+  NC
+  ND
+  OH
+  OK
+  OR
+  PA
+  RI
+  SC
+  SD
+  TN
+  TX
+  UT
+  VT
+  VA
+  WA
+  WV
+  WI
+  WY
+}
+
+model Household {
+  id           Int       @id @default(autoincrement())
+  homeType     HomeType
+  ownership    Ownership
+  lienholderId Int?
+  address1     String
+  address2     String?
+  city         String
+  state        State
+  zip          String    @db.VarChar(5)
+
+  lienholder Lienholder? @relation(fields: [lienholderId], references: [id], onDelete: NoAction)
+  Records    Record[]
+  Users      User[]
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Hispanic {
+  NO
+  MEXICAN
+  PUERTO_RICAN
+  CUBAN
+  OTHER
+  NO_ANSWER
+}
+
+enum Race {
+  WHITE
+  BLACK
+  CHINESE
+  FILIPINO
+  ASIAN_INDIAN
+  VIETNAMESE
+  KOREAN
+  JAPANESE
+  OTHER_ASIAN
+  NATIVE_HAWAIIAN
+  SAMOAN
+  CHAMORRO
+  OTHER_PACIFIC
+  OTHER
+  NO_ANSWER
+}
+
+enum OtherStay {
+  NO
+  COLLEGE
+  MILITARY_ASSIGNMENT
+  JOB_OR_BUSINESS
+  NURSING_HOME
+  WITH_PARENT_OR_OTHER_RELATIVE
+  SEASONAL_OR_SECOND_RESIDENT
+  JAIL_OR_PRISON
+  OTHER
+}
+
+model Record {
+  id            Int       @id @default(autoincrement())
+  firstName     String    @db.VarChar(13)
+  lastName      String    @db.VarChar(18)
+  dob           DateTime
+  gender        Gender
+  telephone     String?   @db.Char(10)
+  householdId   Int
+  hispanic      Hispanic
+  hispanicOther String?
+  race          Race
+  raceOther     String?
+  otherStay     OtherStay
+
+  household Household  @relation(fields: [householdId], references: [id], onDelete: NoAction)
+  Relatives Relative[]
+}
+
+enum Relationship {
+  SELF
+  SPOUSE
+  PARTNER
+  BIOLOGICAL_CHILD
+  ADOPTED_CHILD
+  STEP_CHILD
+  COSINE
+  PARENT
+  GRANDCHILD
+  GRANDPARENT
+  OTHER_RELATIVE
+  OTHER_NON_RELATIVE
+  ROOMMATE_HOUSEMATE
+}
+
+model Relative {
+  id           Int          @id @default(autoincrement())
+  userId       Int
+  relationship Relationship
+  recordId     Int
+  User         User         @relation(fields: [userId], references: [id], onDelete: NoAction)
+  Record       Record       @relation(fields: [recordId], references: [id], onDelete: Cascade)
+}
