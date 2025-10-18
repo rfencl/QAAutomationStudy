@@ -69,8 +69,8 @@ public class CensusAppTest {
     public static void tearDownClass() {
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
             Statement stmt = conn.createStatement();
-            stmt.executeQuery("DELETE FROM \"Record\" WHERE \"firstName\" = '" + fakeFirstName + "' AND \"lastName\" = '" + fakeLastName + "'");
-            stmt.executeQuery("DELETE FROM \"Relative\"");
+            stmt.executeUpdate("DELETE FROM \"Record\" WHERE \"firstName\" = '" + fakeFirstName + "' AND \"lastName\" = '" + fakeLastName + "'");
+            stmt.executeUpdate("DELETE FROM \"Relative\"");
 
         } catch (java.sql.SQLException sqle) {
             log.error("Error deleting records {}", sqle.getMessage());
