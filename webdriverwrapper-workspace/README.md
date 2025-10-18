@@ -201,6 +201,33 @@ WebDriver driver = WebDriverFactory.createDriver("chrome");
 WebDriverWrapper wrapper = new WebDriverWrapper(driver, Duration.ofSeconds(20));
 ```
 
+## Loading test environment variables
+
+You can keep test-specific environment variables in the project root file `test.env`. The repository includes a sample `test.env` with defaults for the local development environment.
+
+To load these variables into your PowerShell session before running tests, run:
+
+```powershell
+Get-Content .\test.env | ForEach-Object {
+	if ($_ -and ($_ -notmatch '^\s*#')) {
+		$parts = $_ -split '=', 2
+		if ($parts.Length -eq 2) {
+			$name = $parts[0].Trim()
+			$value = $parts[1].Trim()
+			Write-Host "Setting $name"
+			$env:$name = $value
+		}
+	}
+}
+
+# Then run tests (example)
+mvn "-Dtest=com.hes.test.CensusAppTest" test
+```
+
+Notes:
+- `EnvLoader` in `src/test/java/com/hes/test/util/EnvLoader.java` will also read `test.env` at test runtime, so loading into the PowerShell environment is optional but useful for running Maven directly from the shell.
+- Modify `test.env` to point to your running app, API base and DB credentials.
+
 ## 📈 Expected Output
 
 When running tests, you'll see detailed logging:
