@@ -1,13 +1,17 @@
 package com.qa.webdriver;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.openqa.selenium.By;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Ignore;
 import org.testng.annotations.Test;
+
 @Ignore
 public class WebDriverWrapperExampleTest {
+    private static final Logger log = LoggerFactory.getLogger(WebDriverWrapperExampleTest.class);
     private WebDriverWrapper wrapper;
     
     @BeforeMethod
@@ -24,11 +28,11 @@ public class WebDriverWrapperExampleTest {
     
     @Test
     public void testCompleteLoginWorkflow() {
-        System.out.println("=== Complete Login Workflow Test ===");
+        log.info("=== Complete Login Workflow Test ===");
         
         // Navigate to login page
         wrapper.navigateTo("https://the-internet.herokuapp.com/login");
-        System.out.println("Navigated to: " + wrapper.getCurrentUrl());
+        log.info("Navigated to: " + wrapper.getCurrentUrl());
         
         // Verify login form elements are present
         Assert.assertTrue(wrapper.isElementVisible(By.id("username")), "Username field should be visible");
@@ -49,23 +53,23 @@ public class WebDriverWrapperExampleTest {
         Assert.assertTrue(wrapper.getCurrentUrl().contains("/secure"));
         Assert.assertTrue(wrapper.isElementVisible(By.xpath("//a[@href='/logout']")));
         
-        System.out.println("Login workflow completed successfully!");
+        log.info("Login workflow completed successfully!");
     }
     
     @Test
     public void testFormInteractionWorkflow() {
-        System.out.println("=== Form Interaction Workflow Test ===");
+        log.info("=== Form Interaction Workflow Test ===");
         
         wrapper.navigateTo("https://the-internet.herokuapp.com/dropdown");
         
         // Test dropdown interactions
         wrapper.selectByText(By.id("dropdown"), "Option 1");
         Assert.assertEquals(wrapper.getSelectedText(By.id("dropdown")), "Option 1");
-        System.out.println("Selected Option 1 from dropdown");
+        log.info("Selected Option 1 from dropdown");
         
         wrapper.selectByValue(By.id("dropdown"), "2");
         Assert.assertEquals(wrapper.getSelectedText(By.id("dropdown")), "Option 2");
-        System.out.println("Selected Option 2 from dropdown");
+        log.info("Selected Option 2 from dropdown");
         
         // Navigate to checkboxes page
         wrapper.navigateTo("https://the-internet.herokuapp.com/checkboxes");
@@ -83,12 +87,12 @@ public class WebDriverWrapperExampleTest {
         Assert.assertTrue(wrapper.isChecked(checkbox1));
         Assert.assertFalse(wrapper.isChecked(checkbox2));
         
-        System.out.println("Checkbox interactions completed successfully!");
+        log.info("Checkbox interactions completed successfully!");
     }
     
     @Test
     public void testDynamicContentHandling() {
-        System.out.println("=== Dynamic Content Handling Test ===");
+        log.info("=== Dynamic Content Handling Test ===");
         
         wrapper.navigateTo("https://the-internet.herokuapp.com/dynamic_loading/2");
         
@@ -97,7 +101,7 @@ public class WebDriverWrapperExampleTest {
         
         // Start dynamic loading
         wrapper.click(By.xpath("//button[text()='Start']"));
-        System.out.println("Started dynamic loading...");
+        log.info("Started dynamic loading...");
         
         // Wait for loading to complete
         wrapper.waitForElementVisible(By.xpath("//div[@id='finish']/h4"));
@@ -106,24 +110,24 @@ public class WebDriverWrapperExampleTest {
         String finishText = wrapper.getText(By.xpath("//div[@id='finish']/h4"));
         Assert.assertEquals(finishText, "Hello World!");
         
-        System.out.println("Dynamic content loaded successfully: " + finishText);
+        log.info("Dynamic content loaded successfully: " + finishText);
     }
     
     @Test
     public void testAlertHandlingWorkflow() {
-        System.out.println("=== Alert Handling Workflow Test ===");
+        log.info("=== Alert Handling Workflow Test ===");
         
         wrapper.navigateTo("https://the-internet.herokuapp.com/javascript_alerts");
         
         // Test 1: Simple Alert
         wrapper.click(By.xpath("//button[text()='Click for JS Alert']"));
         String alertText = wrapper.getAlertText();
-        System.out.println("Alert text: " + alertText);
+        log.info("Alert text: " + alertText);
         wrapper.acceptAlert();
         
         String result = wrapper.getText(By.id("result"));
         Assert.assertEquals(result, "You successfully clicked an alert");
-        System.out.println("Simple alert handled successfully");
+        log.info("Simple alert handled successfully");
         
         // Test 2: Confirm Alert (Accept)
         wrapper.click(By.xpath("//button[text()='Click for JS Confirm']"));
@@ -131,7 +135,7 @@ public class WebDriverWrapperExampleTest {
         
         result = wrapper.getText(By.id("result"));
         Assert.assertEquals(result, "You clicked: Ok");
-        System.out.println("Confirm alert accepted successfully");
+        log.info("Confirm alert accepted successfully");
         
         // Test 3: Confirm Alert (Dismiss)
         wrapper.click(By.xpath("//button[text()='Click for JS Confirm']"));
@@ -139,7 +143,7 @@ public class WebDriverWrapperExampleTest {
         
         result = wrapper.getText(By.id("result"));
         Assert.assertEquals(result, "You clicked: Cancel");
-        System.out.println("Confirm alert dismissed successfully");
+        log.info("Confirm alert dismissed successfully");
         
         // Test 4: Prompt Alert
         wrapper.click(By.xpath("//button[text()='Click for JS Prompt']"));
@@ -148,20 +152,20 @@ public class WebDriverWrapperExampleTest {
         
         result = wrapper.getText(By.id("result"));
         Assert.assertEquals(result, "You entered: Automated Test Input");
-        System.out.println("Prompt alert handled successfully");
+        log.info("Prompt alert handled successfully");
     }
     
     @Test
     public void testNavigationAndUtilityMethods() {
-        System.out.println("=== Navigation and Utility Methods Test ===");
+        log.info("=== Navigation and Utility Methods Test ===");
         
         // Navigate to initial page
         wrapper.navigateTo("https://the-internet.herokuapp.com/");
         String initialUrl = wrapper.getCurrentUrl();
         String initialTitle = wrapper.getTitle();
         
-        System.out.println("Initial URL: " + initialUrl);
-        System.out.println("Initial Title: " + initialTitle);
+        log.info("Initial URL: " + initialUrl);
+        log.info("Initial Title: " + initialTitle);
         
         // Navigate to another page
         wrapper.click(By.linkText("A/B Testing"));
@@ -169,40 +173,40 @@ public class WebDriverWrapperExampleTest {
         
         String newUrl = wrapper.getCurrentUrl();
         Assert.assertTrue(newUrl.contains("/abtest"));
-        System.out.println("Navigated to: " + newUrl);
+        log.info("Navigated to: " + newUrl);
         
         // Test back navigation
         wrapper.back();
         Assert.assertEquals(wrapper.getCurrentUrl(), initialUrl);
-        System.out.println("Back navigation successful");
+        log.info("Back navigation successful");
         
         // Test forward navigation
         wrapper.forward();
         Assert.assertTrue(wrapper.getCurrentUrl().contains("/abtest"));
-        System.out.println("Forward navigation successful");
+        log.info("Forward navigation successful");
         
         // Test refresh
         wrapper.refresh();
         Assert.assertTrue(wrapper.getCurrentUrl().contains("/abtest"));
-        System.out.println("Page refresh successful");
+        log.info("Page refresh successful");
     }
     
     @Test
     public void testScrollAndJavaScriptExecution() {
-        System.out.println("=== Scroll and JavaScript Execution Test ===");
+        log.info("=== Scroll and JavaScript Execution Test ===");
         
         wrapper.navigateTo("https://the-internet.herokuapp.com/large");
         
         // Get initial scroll position
         Long initialScroll = (Long) wrapper.executeScript("return window.pageYOffset;");
-        System.out.println("Initial scroll position: " + initialScroll);
+        log.info("Initial scroll position: " + initialScroll);
         
         // Scroll to bottom
         wrapper.executeScript("window.scrollTo(0, document.body.scrollHeight);");
         
         // Verify scroll position changed
         Long finalScroll = (Long) wrapper.executeScript("return window.pageYOffset;");
-        System.out.println("Final scroll position: " + finalScroll);
+        log.info("Final scroll position: " + finalScroll);
         Assert.assertTrue(finalScroll > initialScroll);
         
         // Test scrolling to specific element
@@ -217,6 +221,6 @@ public class WebDriverWrapperExampleTest {
             wrapper.findElement(By.linkText("Sortable Data Tables"))
         );
         
-        System.out.println("Element in view after scroll: " + isInView);
+        log.info("Element in view after scroll: " + isInView);
     }
 }
